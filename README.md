@@ -8,6 +8,6 @@ Our Features include:
 
 Members:
 - Lyba Ahmad
+- Rania Malik
 - Lushanya Clarke
 - Oluwatobi Obafemi
-- Rania Malik
