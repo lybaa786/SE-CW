@@ -7,7 +7,7 @@ Our Features include:
 - viewing other playlists
 
 Members:
-Lyba Ahmad
-Lushanya Clarke
-Oluwatobi Obafemi
-Rania Malik
+- Lyba Ahmad
+- Lushanya Clarke
+- Oluwatobi Obafemi
+- Rania Malik
