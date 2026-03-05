@@ -15,6 +15,10 @@ app.use(express.static("static"));
 // Get the functions in the db.js file to use
 const db = require('./services/db');
 
+// Get the Models
+const { student } = require( "./models/student" );
+
+
 // Create a route for root - /
 app.get("/", function(req, res) {
       
@@ -73,6 +77,7 @@ app.get("/student-single/:id", async function (req, res) {
     // Send directly to the browser for now as a simple concatenation of strings
     res.send(JSON.stringify(stResult) + JSON.stringify(modResult));
     });
+
 
 // JSON output of all programmes
 app.get("/all-programmes", function(req, res) {
