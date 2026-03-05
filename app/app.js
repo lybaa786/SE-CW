@@ -17,10 +17,9 @@ const db = require('./services/db');
 
 // Create a route for root - /
 app.get("/", function(req, res) {
-    //  Set up am array of data
-    var test_data= ['one ', 'two', 'three', 'four',];
-    //send the array through to the tempa-late as a variable called data
-    res.render("index", {'title': 'My index Page ', 'heading': 'My Heading', 'data': test_data});
+      
+    res.render("index");
+
 });
 
 // Task 1 JSON formatted listing of students
@@ -75,7 +74,6 @@ app.get("/student-single/:id", async function (req, res) {
     res.send(JSON.stringify(stResult) + JSON.stringify(modResult));
     });
 
-
 // JSON output of all programmes
 app.get("/all-programmes", function(req, res) {
     var sql = 'select * from Programmes';
@@ -129,14 +127,35 @@ app.get("/goodbye", function(req, res) {
 
 // Create a dynamic route for /hello/<name>, where name is any value provided by user
 // At the end of the URL
-// Responds to a 'GET' request
-app.get("/hello/:name", function(req, res) {
+// Responds to a 'GET' request.
+
+app.get("/Student/:name/:id", function(req, res) {
     // req.params contains any parameters in the request
     // We can examine it in the console for debugging purposes
     console.log(req.params);
     //  Retrieve the 'name' parameter and use it in a dynamically generated page
-    res.send("Hello " + req.params.name);
+    res.send("Name: " + req.params.name + ", User ID: " + req.params.id);
 });
+
+//html version of the above route
+app.get ("/Student/:name/:id/:Age/html", function(req, res) {
+
+    res.send(`
+        <table border="1">
+            <tr>
+                <th>Name</th>
+                <th>User ID</th>
+                <th>Age</th>
+            </tr>
+            <tr>
+                <td>${req.params.name}</td>
+                <td>${req.params.id}</td>
+                <td>${req.params.Age}</td>
+            </tr>
+        </table> 
+        `);
+    });
+    
 
 // Start server on port 3000
 app.listen(3000,function(){
