@@ -24,7 +24,4 @@ class student {
     async getStudentModules() {
     }
 }
-    module.exports = {
-
-        student
-    }
+    module.exports = student;

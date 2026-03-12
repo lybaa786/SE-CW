@@ -16,7 +16,7 @@ app.use(express.static("static"));
 const db = require('./services/db');
 
 // Get the Models
-const { student } = require( "./models/student" );
+const  student  = require( "./models/student" );
 
 
 // Create a route for root - /
@@ -25,6 +25,44 @@ app.get("/", function(req, res) {
     res.render("index");
 
 });
+
+//create a route for browse playlist.
+
+app.get("/Browse-Playlist", function(req, res) {
+    res.render("Browse-Playlist");
+});
+
+//create a route  for Home-page
+app.get( "/Home", function (req, res){
+    res.render("Home-Page");
+
+});
+
+//create route for profile.
+
+app.get("/Profile", function(req, res) {
+    res.render("Profile");
+});
+
+//create a route Account.
+
+app.get("/Account", function(req, res){
+    res.render("Account");
+});
+
+//create a route for Home-Page.
+app.get("Home", function(req, res){
+    res.render("Home-Page");
+});
+
+// create a route create account.
+app.get("/create-account", function(req, res){
+    res.render("Create-Account");
+});
+
+
+// Use static files in the static directory
+app.use (express.static ("static"));
 
 // Task 1 JSON formatted listing of students
 app.get("/all-students", function(req, res) {
