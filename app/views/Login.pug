@@ -1,0 +1,14 @@
+extends layout 
+
+block content 
+ .Login-page
+   .container
+     h2 Login to Your Account
+     form(action="/login" method="POST")
+       label(for="email") Email:
+       input(type="email" id="email" name="email" required)
+            
+       label(for="password") Password:
+       input(type="password" id="password" name="password" required)
+            
+       button(type="submit") Login

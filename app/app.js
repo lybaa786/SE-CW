@@ -60,6 +60,12 @@ app.get("/create-account", function(req, res){
     res.render("Create-Account");
 });
 
+//create a route for login.
+
+app.get("/Login", function(req, res){
+    res.render("Login");
+});
+
 
 // Use static files in the static directory
 app.use (express.static ("static"));
