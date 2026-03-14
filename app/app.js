@@ -66,6 +66,12 @@ app.get("/Login", function(req, res){
     res.render("Login");
 });
 
+// create a route for homee
+
+app.get("/Homee", function(req, res){
+    res.render("Homee");
+    
+}); 
 
 // Use static files in the static directory
 app.use (express.static ("static"));
