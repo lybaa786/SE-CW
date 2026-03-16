@@ -57,7 +57,7 @@ input[type="password"] {
   margin-bottom: 20px;
 }
 
-.home-page {
+.welcome-page {
   height: 100vh;
   padding-top: 120px;
   background-image: url("/Images/music-background.jpg");
@@ -69,7 +69,7 @@ input[type="password"] {
 }
 
     /* overlay */
-.home-page::before {
+.welcome-page::before {
   content: "";
   position: fixed;
   top: 0;
@@ -81,7 +81,7 @@ input[type="password"] {
 }
 
 
-.home-page .container {
+.welcome-page .container {
   width: 550px;
   margin: 80px auto; 
   padding: 20px;
@@ -92,15 +92,15 @@ input[type="password"] {
   text-align: center;
 }
 
-.home-page h1 {
+.welcome-page h1 {
   margin-bottom: 10px;
 }
 
-.home-page a {
+.welcome-page a {
   text-decoration: none;
 }
 
-.home-page button {
+.welcome-page button {
   margin: 10px;
   padding: 10px 20px;
   border: none;

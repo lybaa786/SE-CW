@@ -6,4 +6,9 @@ block account
     h2 Browse Playlist
 
     height 
-}
+    .playlist-list
+      each playlist in playlists
+        .playlist-item
+          h3= playlist.name
+          p= playlist.description
+          a(href=`/playlists/${playlist.id}`) View Details

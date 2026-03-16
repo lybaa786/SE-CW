@@ -17,6 +17,7 @@ const db = require('./services/db');
 
 // Get the Models
 const  student  = require( "./models/student" );
+const playlist = require("./models/playlist");
 
 
 // Create a route for root - /
@@ -26,10 +27,18 @@ app.get("/", function(req, res) {
 
 });
 
+//create a route for root -/
+
+app.get("/", function(req, res) {
+    res.send("hello world");
+});
+
 //create a route for browse playlist.
 
 app.get("/Browse-Playlist", function(req, res) {
     res.render("Browse-Playlist");
+
+
 });
 
 //create a route  for Home-page
@@ -50,9 +59,9 @@ app.get("/Account", function(req, res){
     res.render("Account");
 });
 
-//create a route for Home-Page.
-app.get("Home", function(req, res){
-    res.render("Home-Page");
+//create a route for welcome-Page.
+app.get("/welcome", function(req, res){
+    res.render("welcome-Page");
 });
 
 // create a route create account.
@@ -70,7 +79,7 @@ app.get("/Login", function(req, res){
 
 app.get("/Homee", function(req, res){
     res.render("Homee");
-    
+
 }); 
 
 // Use static files in the static directory
