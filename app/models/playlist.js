@@ -58,7 +58,7 @@ class playlist {
 
         const sql = "INSERT INTO playlist (name, description) VALUES (?, ?)";
         const result = await db.query(sql, [name, description]);
-        return new playlist(result.insertId);
+        return new Playlist(result.insertId);
     }
 
     static async getAll() {

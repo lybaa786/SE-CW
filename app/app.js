@@ -35,9 +35,15 @@ app.get("/", function(req, res) {
 
 //create a route for browse playlist.
 
-app.get("/Browse-Playlist", function(req, res) {
-    res.render("Browse-Playlist");
+app.get("/Browse-Playlist", async function(req, res) {
 
+    try {
+        const playlists= await playlist.getAll();
+        res.render("Browse-Playlist", {playlists: playlists});
+    } catch (err) {
+        console.log(err);
+        res.send("Error retrieving playlists");
+    }
 
 });
 
@@ -82,8 +88,113 @@ app.get("/Homee", function(req, res){
 
 }); 
 
+
+//create a route for playlist details
+
+app.get("/playlists/:id", async function(req, res) {
+
+    res.render("Playlist-Details", {playlist: new playlist(req.params.id)});
+
+});
+
+//create a route for creating a playlist.
+
+app.get("/create-playlist", function(req, res) {
+
+    res.render("create-playlist");
+
+});
+
+//send create account form data to the server
+app.use(express.urlencoded({extended: true}));
+
+app.post ("/create-account", async function(req, res) {
+
+    try{
+
+        const name = req.body.name;
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        await db.query(sql, [name, email, password]);
+
+        res.redirect("/Login");
+
+    } catch (err) {
+        console.log(err);
+        res.send("Error creating account");
+    }
+});
+
+//function to delete account
+app.get("/delete-account", async function(req, res) {
+
+    try {
+        const email = req.query.email;
+        const sql = "DELETE FROM users WHERE email = ?";
+        await db.query(sql, [email]);
+        res.redirect("/create-account");
+    } catch (err) {
+        console.log(err);
+        res.send("Error deleting account");
+    }       
+});
+
+
 // Use static files in the static directory
 app.use (express.static ("static"));
+
+
+//show one playlsts
+
+app.get("/playlist/:id", async function(req, res) {
+    try {
+        const playlist = new Playlist(req.params.id);
+        await playlist.getPlaylistDetails();
+        res.render("Playlist-Details", {playlist: playlist});
+    } catch (err) {
+        console.log(err);
+        res.send("Error retrieving playlist");
+    }
+});
+
+//Function to create a new playlist
+
+app.post ("/create-playlist", async function(req, res) {
+
+    await Playlist.createPlaylist(req.body.name, req.body.description);
+
+    res.redirect("/Browse-Playlist");
+});
+
+//Function to update a playlist
+
+app.post("/playlist/:id/update", async function(req, res) {
+
+    try {
+        const playlist = new Playlist(req.params.id);
+        await playlist.updatePlaylistName(req.body.name, req.body.description);
+        res.redirect(`/playlist/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error updating playlist");
+    }
+});
+
+
+//Function to delete a playlist by id
+
+app.get("/playlist/:id/delete", async function(req, res) {
+    try {
+        const playlist = new Playlist(req.params.id);
+        await playlist.deletePlaylist();
+        res.redirect("/Browse-Playlist");
+    } catch (err) {
+        console.log(err);
+        res.send("Error deleting playlist");        
+    }
+});
 
 // Task 1 JSON formatted listing of students
 app.get("/all-students", function(req, res) {
