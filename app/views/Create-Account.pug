@@ -1,17 +1,12 @@
 extends layout
 
 block content
- .create-account-page
-   .container
-     h2 Create New Account
-     form(action="/create-account" method="POST")
-       label(for="name") Name:
-       input(type="text" id="name" name="name" required)
-            
-       label(for="email") Email:
-       input(type="email" id="email" name="email" required)
-            
-       label(for="password") Password:
-       input(type="password" id="password" name="password" required)
-            
-       button(type="submit") Create Account
+  .page-center
+    .create-account-page
+      .cre-container
+        .cre-image 
+        h2 Create New Account
+        input.animated-crea(type="text",  placeholder="Username", required)
+        input.animated-crea(type="text",  placeholder="Email", required)
+        input.animated-crea(type="password", placeholder="Password", required)
+        button.animated-btn(type="submit") Create Account
