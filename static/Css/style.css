@@ -127,29 +127,24 @@ html, body {
 }
 
 .page-center {
-  width:100vw;
-  margin-left: calc(50% - 50vw);
-  display:flex;
-  justify-content: center;
+  width:100%;
 }
 
 .create-account-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: lavenderblush;
   padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 .cre-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 360px;
   background-color: darkorchid;
-  padding: 20px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: left
