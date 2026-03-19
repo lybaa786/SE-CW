@@ -3,15 +3,24 @@ html
   head
     title Playlist App
     link(rel="stylesheet", href="/Css/style.css")
-  body 
-    nav.navbar 
-      .nav-left  
-        s.loho(href="/") Playlist App
-      .nav-right
-        a(href="/") Home
-        a(href="/browse-playlist") Browse Playlists
-        a(href="/create-account") Create Account
-        a(href="/Login") Login
-        a(href="/Homee") Homee
+  body  
+    block navbar
+      nav.navbar 
+        .nav-left  
+          s.loho(href="/") Share Playlist App
+        .nav-right
 
+          a Sign in to your account
+          a.login(href="/Login") Login
     block content
+    
+    .content
+
+    div.footer 
+      p &copy; 2026 Share Playlist App. All rights reserved.
+
+     
+
+
+
+  
