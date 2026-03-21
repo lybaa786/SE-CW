@@ -1,6 +1,17 @@
 extends layout
 
-block content 
+
+block navbar 
+  nav.navbar 
+    .nav-right 
+      .profile-dropdown
+        a.profile-trigger.animated-btn(href="#") Profile 
+        .dropdown-menu
+          a(href="/Accounts") My Account
+          a(href="/Browse-playlist") Browse Playlist 
+          a(href="/Login") Logout
+
+block content
   .homee-page
     .container
-      h1 Welcome to Homee Page
+      h1 Welcome to Home Page
