@@ -284,7 +284,79 @@ html, body {
 }
 
 
+
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+
+}
+
+.nav-right {
+  margin-left: auto;
+
+}
+
+.profile-dropdown {
+
+  position: relative;
+  display: inline-block;
+}
+
+  .profile-trigger.animated-btn {
+  background-color: #984caf;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: bold;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-trigger.animated-btn:hover {
+  background-color: #7a3e8c;
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(165, 59, 231, 0.5);
+}
+
+
+
+.dropdown-menu {
+
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  min-width: 220px;
+  background-color: #444 ;
+  border-radius:  8px;
+  padding:8px 0;
+  z-index: 1000;
+}
+
+.dropdown-menu a{
+
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+
+  back-ground-color:#555 ;
+
+}
+
+.profile-dropdown:hover .dropdown-menu {
   
+  display: block;
+}
+
+
 
 
 
