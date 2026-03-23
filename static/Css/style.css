@@ -1,0 +1,362 @@
+.welcome-page {
+  height: 100vh;
+  padding-top: 120px;
+  background-image: url("/Images/music-background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color : #1cb85835;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+    /* overlay */
+.welcome-page::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust the opacity as needed */
+  z-index: -1; /* Ensure the overlay is behind the content */
+}
+
+
+.welcome-page .container {
+  width: 550px;
+  margin: 80px auto; 
+  padding: 20px;
+  border: 1px solid #ccc;
+  border: radius 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: pink;
+  text-align: center;
+}
+
+.welcome-page h1 {
+  margin-bottom: 10px;
+}
+
+.welcome-page a {
+  text-decoration: none;
+}
+
+.welcome-page button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.Login-page {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lavenderblush;
+  padding: 40px 20px;
+}
+
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  background-color: darkorchid;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: left;
+}
+
+.login-image {
+  width: 100%;
+  height: 200px;
+  background-image: url("/Images/muisic.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  margin-bottom: 20px;  
+}
+
+
+.login-container h1,
+.login-container h2 {
+  color:white;
+  margin: 0 0 12px 0;
+}
+
+.login-container input {
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 6px;
+}
+
+.login-container input:hover{
+
+  transform:scale(1.05)
+
+}
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-container button:hover {
+
+  transform:scale(1.05);
+  background-color: #45a049
+}
+
+
+html, body {
+
+  margin: 0;
+  padding: 0;
+}
+
+.page-center {
+  width:100%;
+}
+
+.create-account-page {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lavenderblush;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.cre-container {
+  width: 100%;
+  max-width: 360px;
+  background-color: darkorchid;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: left
+}
+
+
+.cre-image {
+  width: 100%;
+  height: 200px;
+  background-image: url("/Images/playlist-logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  margin-bottom: 20px;  
+}
+
+.cre-container h2 {
+  color:white;
+  margin: 0 0 12px 0;
+}
+
+.cre-container input {
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 6px;
+}
+
+.cre-container input:hover{
+
+  transform:scale(1.02)
+
+}
+
+.cre-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cre-container button:hover {
+
+  transform:scale(1.05);
+  background-color: #45a049;
+}
+
+
+
+
+.homee-page {
+  height: 100vh;
+  padding-top: 120px;
+  background-image: url("/Images/hj.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color : #1cb85800;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navbar button {
+  background-color: #984caf;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.navbar button:hover {
+  background-color: #7a3e8c;
+}
+
+.navbar .search-container {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .login {
+  background-color: #984caf;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navbar .login:hover {
+  background-color: #7a3e8c;
+}
+
+.nav-right .login.animated-bttn {
+  background-color: #984caf;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-right .login.animated-bttn:hover {
+  background-color: #7a3e8c;
+  transform:scale(1.08);
+  box-shadow: 0 0 12px rgba(165, 59, 231, 0.5);
+}
+
+
+
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+
+}
+
+.nav-right {
+  margin-left: auto;
+
+}
+
+.profile-dropdown {
+
+  position: relative;
+  display: inline-block;
+}
+
+  .profile-trigger.animated-btn {
+  background-color: #984caf;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: bold;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-trigger.animated-btn:hover {
+  background-color: #7a3e8c;
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(165, 59, 231, 0.5);
+}
+
+
+
+.dropdown-menu {
+
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  min-width: 220px;
+  background-color: #444 ;
+  border-radius:  8px;
+  padding:8px 0;
+  z-index: 1000;
+}
+
+.dropdown-menu a{
+
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+
+  back-ground-color:#555 ;
+
+}
+
+.profile-dropdown:hover .dropdown-menu {
+  
+  display: block;
+}
+
+
+
+
+

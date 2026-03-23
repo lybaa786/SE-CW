@@ -1,0 +1,14 @@
+extends layout
+
+block content 
+  .create-playlist-page
+    .container 
+      h2 Create New Playlist
+      form(action="/create-playlist" method="POST")
+        label(for="name") Playlist Title:
+        input(type="text" id="name" name="name" required)
+             
+        label(for="description") Description:
+        textarea(id="description" name="description" required)
+             
+        button(type="submit") Create Playlist

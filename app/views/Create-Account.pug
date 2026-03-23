@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  .page-center
+    .create-account-page
+      .cre-container
+        .cre-image 
+        h2 Create New Account
+        input.animated-crea(type="text",  placeholder="Username", required)
+        input.animated-crea(type="text",  placeholder="Email", required)
+        input.animated-crea(type="password", placeholder="Password", required)
+        button.animated-btn(type="submit") Create Account
