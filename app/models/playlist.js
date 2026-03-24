@@ -2,7 +2,7 @@
 
 const db = require('../services/db');
 
-class playlist {
+class Playlist {
     //playlist ID
     
     id;
@@ -28,11 +28,11 @@ class playlist {
 
         if (typeof this.name !== 'string') {
 
-            const sql = "SELECT name FROM playlist WHERE id = ?";
+            const sql = "SELECT title, description FROM playlist WHERE id = ?";
             const results = await db.query(sql, [this.id]);
 
             if (results.length > 0) {
-                this.name = results[0].name;
+                this.name = results[0].title;
                 this.decription = results[0].description;
             }
         }
@@ -40,7 +40,7 @@ class playlist {
 
     async  updatePlaylistName(name, description) {
 
-        const sql = "UPDATE playlist SET name = ?, description = ? WHERE id = ?";
+        const sql = "UPDATE playlist SET title = ?, description = ? WHERE id = ?";
         await db.query(sql, [name, description, this.id]);
 
         this.name = name;
@@ -56,7 +56,7 @@ class playlist {
 
     static async createPlaylist(name, description) {
 
-        const sql = "INSERT INTO playlist (name, description) VALUES (?, ?)";
+        const sql = "INSERT INTO playlist (title, description) VALUES (?, ?)";
         const result = await db.query(sql, [name, description]);
         return new Playlist(result.insertId);
     }
@@ -68,4 +68,4 @@ class playlist {
 }
 }
 
-module.exports = playlist;
+module.exports = Playlist;
