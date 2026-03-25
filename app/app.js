@@ -45,15 +45,24 @@ app.get("/", function(req, res) {
 //create a route for browse playlist.
 
 app.get("/Browse-Playlist", async function(req, res) {
-
     try {
-        const playlists= await playlist.getAll();
-        res.render("Browse-Playlist", {playlists: playlists});
+        // SQL query to get all playlists from the playlist table
+        const sql = `
+            SELECT id, title, description, created_at, user_id
+            FROM playlist
+            ORDER BY id ASC
+        `;
+        // Run the SQL query using the database helper from db.js
+        const playlists = await db.query(sql);
+        // Send the playlist data to the Browse-Playlist.pug page
+        res.render("Browse-Playlist", { playlists: playlists });
     } catch (err) {
-        console.log(err);
+        // Show the real error in the Docker terminal/logs
+        console.log("Browse playlist error:", err);
+
+        // Show a simple message in the browser
         res.send("Error retrieving playlists");
     }
-
 });
 
 //create a route  for Home-page
