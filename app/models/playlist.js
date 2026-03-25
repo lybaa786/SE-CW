@@ -38,12 +38,12 @@ class Playlist {
         }
     }
 
-    async  updatePlaylistName(name, description) {
+    async  updatePlaylistName(title, description) {
 
         const sql = "UPDATE playlist SET title = ?, description = ? WHERE id = ?";
-        await db.query(sql, [name, description, this.id]);
+        await db.query(sql, [title, description, this.id]);
 
-        this.name = name;
+        this.name = title;
         this.decription = description;
     }
 
@@ -54,10 +54,10 @@ class Playlist {
         await db.query(sql, [this.id]);
     }
 
-    static async createPlaylist(name, description) {
+    static async createPlaylist(title, description) {
 
         const sql = "INSERT INTO playlist (title, description) VALUES (?, ?)";
-        const result = await db.query(sql, [name, description]);
+        const result = await db.query(sql, [title, description]);
         return new Playlist(result.insertId);
     }
 
