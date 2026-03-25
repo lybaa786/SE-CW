@@ -4,9 +4,12 @@ block content
   .page-center
     .create-account-page
       .cre-container
-        .cre-image 
+        .cre-image
         h2 Create New Account
-        input.animated-crea(type="text",  placeholder="Username", required)
-        input.animated-crea(type="text",  placeholder="Email", required)
-        input.animated-crea(type="password", placeholder="Password", required)
-        button.animated-btn(type="submit") Create Account
+        
+        form(action="/create-account" method= "POST") 
+        
+          input.animated-crea(type="text", name="username", placeholder="Username", required)
+          input.animated-crea(type="email", name="email" placeholder="Email", required)
+          input.animated-crea(type="password", name= "password" placeholder="Password", required)
+          button.animated-btn(type="submit") Create Account
