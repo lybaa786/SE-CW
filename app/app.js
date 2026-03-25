@@ -114,6 +114,7 @@ app.get("/create-playlist", function(req, res) {
 
 });
 
+
 //send create account form data to the server
 app.use(express.urlencoded({extended: true}));
 
@@ -166,7 +167,25 @@ app.get("/delete-account", async function(req, res) {
 });
 
 
+//function to Get Email and Username from Database
 
+app.get("/profile/:username", async function (req, res) {
+  try {
+    const rows = await db.query(
+      "SELECT * FROM Account WHERE Username = ?",
+      [req.params.username]
+    );
+
+    if (!rows || rows.length === 0) {
+      return res.send("User not found");
+    }
+
+    res.render("Profile-Page", { user: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
 
 
 //show one playlsts
