@@ -1,14 +1,17 @@
 extends layout
 
-block account
-.browse-page
-  .container 
-    h2 Browse Playlist
+block content
+  .browse-page
+    .container
+      h2 Browse Playlists
 
-    height 
-    .playlist-list
-      each playlist in playlists
-        .playlist-item
-          h3= playlist.name
-          p= playlist.description
-          a(href=`/playlists/${playlist.id}`) View Details
+      if playlists && playlists.length > 0
+        .playlist-list
+          each playlist in playlists
+            .playlist-item
+              h3= playlist.title
+              p= playlist.description
+              p Playlist ID: #{playlist.id}
+              p User ID: #{playlist.user_id}
+      else
+        p No playlists found.
