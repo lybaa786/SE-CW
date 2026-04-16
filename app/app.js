@@ -1,8 +1,17 @@
 // Import express.js
 const express = require("express");
 
+//create bycrypt
+const bcrypt = require("bcrypt");
+
+//Account import
+const Account = require("./models/account");
+
 // Create express app
 var app = express();
+
+// Use static files in the static directory
+app.use (express.static ("static"));
 
 //use the pug templating engine 
 
@@ -105,26 +114,42 @@ app.get("/create-playlist", function(req, res) {
 
 });
 
+
 //send create account form data to the server
 app.use(express.urlencoded({extended: true}));
 
-app.post ("/create-account", async function(req, res) {
+app.post("/create-account", async function (req, res) {
 
-    try{
+  try {
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
 
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
-
-        const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-        await db.query(sql, [name, email, password]);
-
-        res.redirect("/Login");
-
-    } catch (err) {
-        console.log(err);
-        res.send("Error creating account");
+    if (!username || !email || !password) {
+      return res.send("All fields are required");
     }
+
+    const existing = await db.query(
+      "SELECT * FROM Account WHERE Email = ? OR Username = ?",
+      [email, username]
+    );
+
+    if (existing.length > 0) {
+      return res.send("Username or email already exists");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await db.query(
+      "INSERT INTO Account (Username, Email, PasswordHash) VALUES (?, ?, ?)",
+      [username, email, hashedPassword]
+    );
+
+    res.redirect("/Login");
+  } catch (err) {
+    console.log(err);
+    res.send("Error creating account");
+  }
 });
 
 //function to delete account
@@ -142,8 +167,25 @@ app.get("/delete-account", async function(req, res) {
 });
 
 
-// Use static files in the static directory
-app.use (express.static ("static"));
+//function to Get Email and Username from Database
+
+app.get("/profile/:username", async function (req, res) {
+  try {
+    const rows = await db.query(
+      "SELECT * FROM Account WHERE Username = ?",
+      [req.params.username]
+    );
+
+    if (!rows || rows.length === 0) {
+      return res.send("User not found");
+    }
+
+    res.render("Profile-Page", { user: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
 
 
 //show one playlsts

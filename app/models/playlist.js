@@ -2,7 +2,7 @@
 
 const db = require('../services/db');
 
-class playlist {
+class Playlist {
     //playlist ID
     
     id;
@@ -28,22 +28,38 @@ class playlist {
 
         if (typeof this.name !== 'string') {
 
-            const sql = "SELECT name FROM playlist WHERE id = ?";
+            const sql = "SELECT title, description FROM playlist WHERE id = ?";
             const results = await db.query(sql, [this.id]);
 
             if (results.length > 0) {
-                this.name = results[0].name;
+                this.name = results[0].title;
                 this.decription = results[0].description;
             }
         }
     }
 
-    async  updatePlaylistName(name, description) {
+    async getSongs() {
+        const sql = `SELECT id, title, artist, album, 
+                     duration_secs, genre, spotify_url 
+                     FROM songs WHERE playlist_id = ? ORDER BY id`;
+        this.songs = await db.query(sql, [this.id]);
+        return this.songs;
+    }
 
-        const sql = "UPDATE playlist SET name = ?, description = ? WHERE id = ?";
-        await db.query(sql, [name, description, this.id]);
+    async getTags() {
+        const sql = `SELECT t.id, t.name FROM tags t
+                     JOIN playlist_tags pt ON pt.tag_id = t.id
+                     WHERE pt.playlist_id = ?`;
+        this.tags = await db.query(sql, [this.id]);
+        return this.tags;
+    }
 
-        this.name = name;
+    async  updatePlaylistName(title, description) {
+
+        const sql = "UPDATE playlist SET title = ?, description = ? WHERE id = ?";
+        await db.query(sql, [title, description, this.id]);
+
+        this.name = title;
         this.decription = description;
     }
 
@@ -54,10 +70,10 @@ class playlist {
         await db.query(sql, [this.id]);
     }
 
-    static async createPlaylist(name, description) {
+    static async createPlaylist(title, description) {
 
-        const sql = "INSERT INTO playlist (name, description) VALUES (?, ?)";
-        const result = await db.query(sql, [name, description]);
+        const sql = "INSERT INTO playlist (title, description) VALUES (?, ?)";
+        const result = await db.query(sql, [title, description]);
         return new Playlist(result.insertId);
     }
 
@@ -68,4 +84,4 @@ class playlist {
 }
 }
 
-module.exports = playlist;
+module.exports = Playlist;
