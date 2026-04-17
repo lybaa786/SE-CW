@@ -38,6 +38,22 @@ class Playlist {
         }
     }
 
+    async getSongs() {
+        const sql = `SELECT id, title, artist, album, 
+                     duration_secs, genre, spotify_url 
+                     FROM songs WHERE playlist_id = ? ORDER BY id`;
+        this.songs = await db.query(sql, [this.id]);
+        return this.songs;
+    }
+
+    async getTags() {
+        const sql = `SELECT t.id, t.name FROM tags t
+                     JOIN playlist_tags pt ON pt.tag_id = t.id
+                     WHERE pt.playlist_id = ?`;
+        this.tags = await db.query(sql, [this.id]);
+        return this.tags;
+    }
+
     async  updatePlaylistName(title, description) {
 
         const sql = "UPDATE playlist SET title = ?, description = ? WHERE id = ?";
