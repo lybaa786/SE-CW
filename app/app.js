@@ -20,10 +20,72 @@ app.get("/", function(req, res) {
 // BROWSE PLAYLISTS
 app.get("/Browse-Playlist", async function(req, res) {
     try {
-        const playlists = await Playlist.getAll();
-        res.render("Browse-Playlist", { playlists: playlists });
+        const selectedTag = req.query.tag || "";
+        const sort = req.query.sort || "newest";
+        const search = req.query.search || "";
+
+        let orderBy = "p.created_at DESC";
+        if (sort === "title") {
+            orderBy = "p.title ASC";
+        } else if (sort === "oldest") {
+            orderBy = "p.created_at ASC";
+        }
+
+        let sql = `
+            SELECT 
+                p.id,
+                p.title,
+                p.description,
+                p.created_at,
+                p.user_id,
+                u.name AS username,
+                GROUP_CONCAT(t.name SEPARATOR ',') AS tags
+            FROM playlist p
+            LEFT JOIN users u ON p.user_id = u.id
+            LEFT JOIN playlist_tags pt ON p.id = pt.playlist_id
+            LEFT JOIN tags t ON pt.tag_id = t.id
+            WHERE 1=1
+        `;
+
+        const params = [];
+
+        if (search) {
+            sql += ` AND (p.title LIKE ? OR p.description LIKE ?) `;
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        if (selectedTag) {
+            sql += `
+                AND p.id IN (
+                    SELECT pt2.playlist_id
+                    FROM playlist_tags pt2
+                    JOIN tags t2 ON pt2.tag_id = t2.id
+                    WHERE t2.name = ?
+                )
+            `;
+            params.push(selectedTag);
+        }
+
+        sql += `
+            GROUP BY p.id, p.title, p.description, p.created_at, p.user_id, u.name
+            ORDER BY ${orderBy}
+        `;
+
+        const playlists = await db.query(sql, params);
+
+        const tagsSql = `SELECT id, name FROM tags ORDER BY name ASC`;
+        const allTags = await db.query(tagsSql);
+
+        console.log("TAGS:", allTags);
+    res.render("Browse-Playlist", {
+        playlists: playlists || [],
+        allTags: allTags || [],
+        selectedTag: selectedTag || "",
+        sort: sort || "newest",
+        search: search || ""
+    });
     } catch (err) {
-        console.log(err);
+        console.log("Browse playlist error:", err);
         res.send("Error retrieving playlists");
     }
 });

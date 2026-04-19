@@ -1,14 +1,331 @@
-extends layout
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Browse Playlists
+    style.
+      :root {
+        --sage: #b7d3b0;
+        --sage-dark: #90b08b;
+        --cream: #f7f6f2;
+        --white: #ffffff;
+        --text: #2f3a2f;
+        --muted: #6b756b;
+        --border: #d7e4d2;
+        --shadow: 0 10px 25px rgba(85, 107, 85, 0.08);
+      }
 
-block account
-.browse-page
-  .container 
-    h2 Browse Playlist
+      * {
+        box-sizing: border-box;
+      }
 
-    height 
-    .playlist-list
-      each playlist in playlists
-        .playlist-item
-          h3= playlist.name
-          p= playlist.description
-          a(href=`/playlists/${playlist.id}`) View Details
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(to bottom, #eef6eb, #f8faf7);
+        color: var(--text);
+      }
+
+      .topbar {
+        background: rgba(183, 211, 176, 0.95);
+        border-bottom: 1px solid #9eb89a;
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+      }
+
+      .brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+
+      .topbar-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .search-input {
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        outline: none;
+        width: 240px;
+        background: white;
+      }
+
+      .search-btn,
+      .clear-btn,
+      .sort-btn,
+      .tag-btn,
+      .view-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s ease;
+      }
+
+      .search-btn,
+      .sort-btn,
+      .view-btn {
+        background: var(--sage-dark);
+        color: white;
+      }
+
+      .search-btn:hover,
+      .sort-btn:hover,
+      .view-btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+      }
+
+      .clear-btn {
+        background: #ecefe9;
+        color: var(--text);
+      }
+
+      .page-wrap {
+        max-width: 1050px;
+        margin: 32px auto;
+        padding: 0 20px 40px;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .page-subtitle {
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+
+      .controls {
+        background: rgba(255,255,255,0.82);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+        margin-bottom: 28px;
+      }
+
+      .control-group {
+        margin-bottom: 20px;
+      }
+
+      .control-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .control-label {
+        font-size: 1.05rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+      }
+
+      .tag-list,
+      .sort-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tag-btn {
+        background: #f4f8f2;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .tag-btn.active,
+      .sort-btn.active {
+        background: var(--sage);
+        color: #1f2a1f;
+        font-weight: bold;
+      }
+
+      .search-form {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .cards {
+        display: grid;
+        gap: 18px;
+      }
+
+      .playlist-card {
+        background: rgba(255,255,255,0.92);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+        transition: 0.2s ease;
+      }
+
+      .playlist-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .playlist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .playlist-title {
+        margin: 0;
+        font-size: 1.45rem;
+      }
+
+      .playlist-user {
+        color: #557a57;
+        font-weight: 600;
+        margin-top: 6px;
+      }
+
+      .playlist-desc {
+        color: #455245;
+        line-height: 1.6;
+        margin: 14px 0 16px;
+      }
+
+      .playlist-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .mini-tag {
+        padding: 6px 12px;
+        background: #eef6eb;
+        border: 1px solid #d7e4d2;
+        border-radius: 999px;
+        font-size: 0.9rem;
+      }
+
+      .playlist-meta {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .empty-state {
+        background: rgba(255,255,255,0.92);
+        border: 1px dashed #bfd1bc;
+        border-radius: 24px;
+        padding: 36px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 700px) {
+        .playlist-header {
+          flex-direction: column;
+        }
+
+        .search-input {
+          width: 100%;
+        }
+
+        .search-form {
+          flex-direction: column;
+        }
+      }
+
+  body
+    .topbar
+      .brand SoundMatch
+      .topbar-right
+        form.search-form(action="/Browse-Playlist" method="GET")
+          input.search-input(
+            type="text"
+            name="search"
+            placeholder="Search playlists..."
+            value=search
+          )
+          if selectedTag
+            input(type="hidden" name="tag" value=selectedTag)
+          if sort
+            input(type="hidden" name="sort" value=sort)
+          button.search-btn(type="submit") Search
+
+    .page-wrap
+      h1.page-title Browse Playlists
+      p.page-subtitle Discover playlists that match your mood and music taste ♡
+
+      .controls
+        .control-group
+          .control-label Filter Tags
+          .tag-list
+            a.tag-btn(
+              class=selectedTag === "" ? "active" : ""
+              href="/Browse-Playlist?search=" + encodeURIComponent(search || "") + "&sort=" + encodeURIComponent(sort || "newest")
+              ) All
+
+              if allTags && allTags.length
+                each tag in allTags
+                  a.tag-btn(
+                    class=selectedTag === tag.name ? "active" : ""
+                    href="/Browse-Playlist?tag=" + encodeURIComponent(tag.name) + "&sort=" + encodeURIComponent(sort || "newest") + "&search=" + encodeURIComponent(search || "")
+                  )= tag.name
+
+              a.clear-btn(href="/Browse-Playlist") Clear
+
+        .control-group
+          .control-label Sort
+          .sort-list
+            a.sort-btn(
+              class=sort === "newest" ? "active" : ""
+              href=`/Browse-Playlist?tag=${encodeURIComponent(selectedTag || "")}&sort=newest&search=${encodeURIComponent(search || "")}`
+            ) Newest
+
+            a.sort-btn(
+              class=sort === "oldest" ? "active" : ""
+              href=`/Browse-Playlist?tag=${encodeURIComponent(selectedTag || "")}&sort=oldest&search=${encodeURIComponent(search || "")}`
+            ) Oldest
+
+            a.sort-btn(
+              class=sort === "title" ? "active" : ""
+              href=`/Browse-Playlist?tag=${encodeURIComponent(selectedTag || "")}&sort=title&search=${encodeURIComponent(search || "")}`
+            ) A–Z
+
+      if playlists && playlists.length > 0
+        .cards
+          each playlist in playlists
+            .playlist-card
+              .playlist-header
+                div
+                  h2.playlist-title= playlist.title
+                  if playlist.username
+                    .playlist-user by @#{playlist.username}
+                  else
+                    .playlist-user by @user#{playlist.user_id}
+
+                a.view-btn(href=`/playlist/${playlist.id}`) View
+
+              if playlist.tags
+                .playlist-tags
+                  each tag in playlist.tags.split(",")
+                    span.mini-tag= tag.trim()
+
+              p.playlist-desc= playlist.description || "No description added yet."
+
+              .playlist-meta
+                | Created: #{new Date(playlist.created_at).toLocaleDateString()}
+      else
+        .empty-state
+          h3 No playlists found
+          p Try changing the search, tag, or sort options.
