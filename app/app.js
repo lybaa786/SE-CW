@@ -1,3 +1,4 @@
+const session = require('express-session');
 const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
@@ -230,6 +231,43 @@ app.get("/profile/:username", async function(req, res) {
         res.status(500).send("Server error");
     }
 });
+
+// RATINGS ROUTE
+
+app.post('/rate/:userId', async function(req, res) {
+    try {
+        const { score, comment, exchange_id } = req.body;
+        await db.query(
+            `INSERT INTO ratings (rater_id, ratee_id, exchange_id, score, comment)
+             VALUES (?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
+            [1, req.params.userId, exchange_id || 1, score, comment]
+        );
+        res.redirect('/Browse-Playlist');
+    } catch (err) {
+        console.log(err);
+        res.send('Error submitting rating');
+    }
+});
+
+app.get('/ratings', async function(req, res) {
+    try {
+        const ratings = await db.query(`
+            SELECT r.*, 
+                   u1.name as rater_name,
+                   u2.name as ratee_name
+            FROM ratings r
+            JOIN users u1 ON u1.id = r.rater_id
+            JOIN users u2 ON u2.id = r.ratee_id
+            ORDER BY r.created_at DESC
+        `);
+        res.render('ratings', { ratings });
+    } catch (err) {
+        console.log(err);
+        res.send('Error loading ratings');
+    }
+});
+
 
 //  START 
 app.listen(3000, function() {
