@@ -34,4 +34,9 @@ block content
                     | #{Math.floor(song.duration_secs / 60)}:#{String(song.duration_secs % 60).padStart(2, '0')}
             .song-card-bottom
               if song.spotify_url
-                a.spotify-btn(href=song.spotify_url target='_blank' rel='noopener n
+                a.spotify-btn(href=song.spotify_url target='_blank' rel='noopener noreferrer')
+                  | Open in Spotify
+              else
+                span.no-spotify No Spotify link yet
+    else
+      p.empty-songs No songs in this playlist yet.

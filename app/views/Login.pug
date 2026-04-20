@@ -1,11 +1,15 @@
-extends layout 
+extends layout
 
-block content 
+block content
   .Login-page
     .login-container
-      .login-image
-      h1 Welcome Back! 
+      h1 Welcome Back!
       h2 Login to Your Account
-      input.animated-inp(type="text" placeholder="Email", required)
-      input.animated-inp(type="password", placeholder="Password", required)
-      button.animated-btn(type="submit") Login
+      if error
+        p.error-msg= error
+      form(action='/login' method='POST')
+        input.animated-inp(type='email' name='email' placeholder='Email' required)
+        input.animated-inp(type='password' name='password' placeholder='Password' required)
+        button.animated-btn(type='submit') Login
+      p Already have no account? 
+        a(href='/create-account') Register here
