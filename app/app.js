@@ -13,12 +13,12 @@ app.use(express.urlencoded({extended: true}));
 const db = require('./services/db');
 const Playlist = require("./models/playlist");
 
-// Home
+//  HOME 
 app.get("/", function(req, res) {
     res.render("index");
 });
 
-// BROWSE PLAYLISTS
+// BROWSE PLAYLISTS 
 app.get("/Browse-Playlist", async function(req, res) {
     try {
         const selectedTag = req.query.tag || "";
@@ -26,19 +26,12 @@ app.get("/Browse-Playlist", async function(req, res) {
         const search = req.query.search || "";
 
         let orderBy = "p.created_at DESC";
-        if (sort === "title") {
-            orderBy = "p.title ASC";
-        } else if (sort === "oldest") {
-            orderBy = "p.created_at ASC";
-        }
+        if (sort === "title") orderBy = "p.title ASC";
+        else if (sort === "oldest") orderBy = "p.created_at ASC";
 
         let sql = `
             SELECT 
-                p.id,
-                p.title,
-                p.description,
-                p.created_at,
-                p.user_id,
+                p.id, p.title, p.description, p.created_at, p.user_id,
                 u.name AS username,
                 GROUP_CONCAT(t.name SEPARATOR ',') AS tags
             FROM playlist p
@@ -58,8 +51,7 @@ app.get("/Browse-Playlist", async function(req, res) {
         if (selectedTag) {
             sql += `
                 AND p.id IN (
-                    SELECT pt2.playlist_id
-                    FROM playlist_tags pt2
+                    SELECT pt2.playlist_id FROM playlist_tags pt2
                     JOIN tags t2 ON pt2.tag_id = t2.id
                     WHERE t2.name = ?
                 )
@@ -67,31 +59,25 @@ app.get("/Browse-Playlist", async function(req, res) {
             params.push(selectedTag);
         }
 
-        sql += `
-            GROUP BY p.id, p.title, p.description, p.created_at, p.user_id, u.name
-            ORDER BY ${orderBy}
-        `;
+        sql += ` GROUP BY p.id, p.title, p.description, p.created_at, p.user_id, u.name ORDER BY ${orderBy}`;
 
         const playlists = await db.query(sql, params);
+        const allTags = await db.query(`SELECT id, name FROM tags ORDER BY name ASC`);
 
-        const tagsSql = `SELECT id, name FROM tags ORDER BY name ASC`;
-        const allTags = await db.query(tagsSql);
-
-        console.log("TAGS:", allTags);
-    res.render("Browse-Playlist", {
-        playlists: playlists || [],
-        allTags: allTags || [],
-        selectedTag: selectedTag || "",
-        sort: sort || "newest",
-        search: search || ""
-    });
+        res.render("Browse-Playlist", {
+            playlists: playlists || [],
+            allTags: allTags || [],
+            selectedTag: selectedTag || "",
+            sort: sort || "newest",
+            search: search || ""
+        });
     } catch (err) {
         console.log("Browse playlist error:", err);
         res.send("Error retrieving playlists");
     }
 });
 
-// PLAYLIST DETAIL 
+//  PLAYLIST DETAIL
 app.get("/playlists/:id", async function(req, res) {
     try {
         const pl = new Playlist(req.params.id);
@@ -105,7 +91,7 @@ app.get("/playlists/:id", async function(req, res) {
     }
 });
 
-//  CREATE PLAYLIST 
+//  CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
     res.render("create-playlist");
 });
@@ -144,49 +130,32 @@ app.get("/playlists/:id/delete", async function(req, res) {
     }
 });
 
-//  PAGES 
-app.get("/Home", function(req, res) {
-    res.render("Home-Page");
-});
+//  PAGES
+app.get("/Home", function(req, res) { res.render("Home-Page"); });
+app.get("/welcome", function(req, res) { res.render("welcome-Page"); });
+app.get("/Homee", function(req, res) { res.render("Homee"); });
 
-app.get("/welcome", function(req, res) {
-    res.render("welcome-Page");
-});
-
-app.get("/Homee", function(req, res) {
-    res.render("Homee");
-});
-
-//  ACCOUNT 
+//  ACCOUN
 app.get("/create-account", function(req, res) {
     res.render("Create-Account");
 });
 
 app.post("/create-account", async function(req, res) {
     try {
-        const username = req.body.username;
-        const email = req.body.email;
-        const password = req.body.password;
-
-        if (!username || !email || !password) {
-            return res.send("All fields are required");
-        }
+        const { username, email, password } = req.body;
+        if (!username || !email || !password) return res.send("All fields are required");
 
         const existing = await db.query(
             "SELECT * FROM Account WHERE Email = ? OR Username = ?",
             [email, username]
         );
-
-        if (existing.length > 0) {
-            return res.send("Username or email already exists");
-        }
+        if (existing.length > 0) return res.send("Username or email already exists");
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.query(
             "INSERT INTO Account (Username, Email, PasswordHash) VALUES (?, ?, ?)",
             [username, email, hashedPassword]
         );
-
         res.redirect("/Login");
     } catch (err) {
         console.log(err);
@@ -205,26 +174,17 @@ app.get("/delete-account", async function(req, res) {
     }
 });
 
-app.get("/Login", function(req, res) {
-    res.render("Login");
-});
+app.get("/Login", function(req, res) { res.render("Login"); });
+app.get("/Account", function(req, res) { res.render("Account"); });
 
-app.get("/Account", function(req, res) {
-    res.render("Account");
-});
-
-//  PROFILE 
+//  PROFILE
 app.get("/profile/:username", async function(req, res) {
     try {
         const rows = await db.query(
             "SELECT * FROM Account WHERE Username = ?",
             [req.params.username]
         );
-
-        if (!rows || rows.length === 0) {
-            return res.send("User not found");
-        }
-
+        if (!rows || rows.length === 0) return res.send("User not found");
         res.render("Profile-Page", { user: rows[0] });
     } catch (error) {
         console.error(error);
@@ -232,18 +192,28 @@ app.get("/profile/:username", async function(req, res) {
     }
 });
 
-// RATINGS ROUTE
-
+//  RATINGS 
 app.post('/rate/:userId', async function(req, res) {
     try {
-        const { score, comment, exchange_id } = req.body;
+        const { score, comment, vibe, happy } = req.body;
+        const situations = req.body.situation
+            ? (Array.isArray(req.body.situation) ? req.body.situation : [req.body.situation])
+            : [];
+
+        const fullComment = JSON.stringify({
+            vibe: vibe || null,
+            happy: happy || 3,
+            situations: situations,
+            comment: comment || ''
+        });
+
         await db.query(
             `INSERT INTO ratings (rater_id, ratee_id, exchange_id, score, comment)
              VALUES (?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
-            [1, req.params.userId, exchange_id || 1, score, comment]
+            [1, req.params.userId, 1, score, fullComment]
         );
-        res.redirect('/Browse-Playlist');
+        res.redirect('/ratings');
     } catch (err) {
         console.log(err);
         res.send('Error submitting rating');
@@ -252,8 +222,8 @@ app.post('/rate/:userId', async function(req, res) {
 
 app.get('/ratings', async function(req, res) {
     try {
-        const ratings = await db.query(`
-            SELECT r.*, 
+        const rawRatings = await db.query(`
+            SELECT r.*,
                    u1.name as rater_name,
                    u2.name as ratee_name
             FROM ratings r
@@ -261,6 +231,22 @@ app.get('/ratings', async function(req, res) {
             JOIN users u2 ON u2.id = r.ratee_id
             ORDER BY r.created_at DESC
         `);
+
+        const ratings = rawRatings.map(r => {
+            try {
+                const parsed = JSON.parse(r.comment);
+                return {
+                    ...r,
+                    vibe: parsed.vibe,
+                    situations: parsed.situations || [],
+                    comment: parsed.comment,
+                    happy: parsed.happy
+                };
+            } catch(e) {
+                return { ...r, vibe: null, situations: [], comment: r.comment };
+            }
+        });
+
         res.render('ratings', { ratings });
     } catch (err) {
         console.log(err);
@@ -268,8 +254,7 @@ app.get('/ratings', async function(req, res) {
     }
 });
 
-
-//  START 
+//  START
 app.listen(3000, function() {
     console.log(`Server running at http://127.0.0.1:3000/`);
 });
