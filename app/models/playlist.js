@@ -19,6 +19,10 @@ class Playlist {
 
     songs = [];
 
+    //playlist tags
+    
+    tags = [];
+
     constructor(id) {
         this.id = id;
     }

@@ -1,0 +1,388 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Ratings — PlaylistExchange
+    style.
+      :root {
+        --sage: #b7d3b0;
+        --sage-dark: #90b08b;
+        --text: #2f3a2f;
+        --muted: #6b756b;
+        --border: #d7e4d2;
+        --shadow: 0 10px 25px rgba(85,107,85,0.08);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(to bottom, #eef6eb, #f8faf7);
+        color: var(--text);
+      }
+      .topbar {
+        background: rgba(183,211,176,0.95);
+        border-bottom: 1px solid #9eb89a;
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+      }
+      .brand { font-size: 1.5rem; font-weight: bold; }
+      .topbar-right { display: flex; gap: 12px; align-items: center; }
+      .nav-link {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        padding: 8px 14px;
+        border-radius: 999px;
+        transition: 0.2s ease;
+      }
+      .nav-link:hover { background: var(--sage-dark); color: white; }
+      .page-wrap { max-width: 860px; margin: 36px auto; padding: 0 20px 60px; }
+      .page-title { font-size: 2rem; margin-bottom: 6px; }
+      .page-subtitle { color: var(--muted); margin-bottom: 32px; }
+
+      /* FORM CARD */
+      .form-card {
+        background: rgba(255,255,255,0.95);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: var(--shadow);
+        margin-bottom: 40px;
+      }
+      .form-card h2 { font-size: 1.25rem; margin-bottom: 24px; }
+
+      /* VIBE PICKER */
+      .vibe-label { font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; display: block; }
+      .vibe-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .vibe-option { display: none; }
+      .vibe-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 12px 18px;
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        cursor: pointer;
+        background: #f4f8f2;
+        transition: all 0.18s ease;
+        font-size: 0.9rem;
+        color: var(--text);
+        min-width: 90px;
+      }
+      .vibe-btn .icon { font-size: 1.6rem; }
+      .vibe-option:checked + .vibe-btn {
+        border-color: var(--sage-dark);
+        background: #e4f0e0;
+        font-weight: bold;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(144,176,139,0.3);
+      }
+
+      /* MOOD SLIDERS */
+      .sliders-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 28px;
+      }
+      .slider-group label {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+      }
+      .slider-ends {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--sage-dark);
+        cursor: pointer;
+      }
+
+      /* SITUATION TAGS */
+      .tags-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 28px;
+      }
+      .tag-check { display: none; }
+      .tag-pill-btn {
+        padding: 7px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.88rem;
+        cursor: pointer;
+        background: #f4f8f2;
+        color: var(--text);
+        transition: all 0.15s ease;
+      }
+      .tag-check:checked + .tag-pill-btn {
+        background: var(--sage);
+        border-color: var(--sage-dark);
+        font-weight: bold;
+      }
+
+      /* COMMENT + SUBMIT */
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: white;
+        outline: none;
+        margin-bottom: 20px;
+        transition: border 0.2s;
+        resize: vertical;
+      }
+      .form-textarea:focus { border-color: var(--sage-dark); }
+      .submit-btn {
+        background: var(--sage-dark);
+        color: white;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 32px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .submit-btn:hover { transform: translateY(-1px); opacity: 0.93; }
+
+      /* RATINGS LIST */
+      .section-title { font-size: 1.5rem; margin-bottom: 18px; }
+      .rating-card {
+        background: rgba(255,255,255,0.93);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 22px 26px;
+        box-shadow: var(--shadow);
+        margin-bottom: 16px;
+        transition: 0.2s ease;
+      }
+      .rating-card:hover { transform: translateY(-2px); }
+      .rating-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .rating-users { font-size: 1rem; }
+      .rating-users strong { color: var(--text); }
+      .rating-vibe-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #eef6eb;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.88rem;
+        font-weight: bold;
+      }
+      .mood-bars {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .mood-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: var(--muted);
+        min-width: 180px;
+      }
+      .mood-bar-track {
+        flex: 1;
+        height: 6px;
+        background: #e0ece0;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .mood-bar-fill {
+        height: 100%;
+        background: var(--sage-dark);
+        border-radius: 999px;
+      }
+      .situation-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+      .situation-tag {
+        padding: 4px 12px;
+        background: #eef6eb;
+        border: 1px solid #d7e4d2;
+        border-radius: 999px;
+        font-size: 0.82rem;
+      }
+      .rating-comment { color: var(--muted); line-height: 1.6; font-size: 0.95rem; }
+      .empty-state {
+        background: rgba(255,255,255,0.92);
+        border: 1px dashed #bfd1bc;
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 600px) {
+        .sliders-row { grid-template-columns: 1fr; }
+      }
+
+  body
+    .topbar
+      .brand PlaylistExchange
+      .topbar-right
+        a.nav-link(href="/Browse-Playlist") Browse
+        a.nav-link(href="/ratings") Ratings
+
+    .page-wrap
+      h1.page-title Playlist Vibes
+      p.page-subtitle Rate your exchange experience with music energy ♡
+
+      .form-card
+        h2 How was this playlist?
+
+        form(action='/rate/2' method='POST')
+
+          span.vibe-label What's the vibe?
+          .vibe-grid
+            input.vibe-option(type='radio' name='vibe' id='vibe1' value='Chill')
+            label.vibe-btn(for='vibe1')
+              span.icon 🌙
+              | Chill
+            input.vibe-option(type='radio' name='vibe' id='vibe2' value='Hype')
+            label.vibe-btn(for='vibe2')
+              span.icon 🔥
+              | Hype
+            input.vibe-option(type='radio' name='vibe' id='vibe3' value='Late-night')
+            label.vibe-btn(for='vibe3')
+              span.icon 🚗
+              | Late-night
+            input.vibe-option(type='radio' name='vibe' id='vibe4' value='Gym energy')
+            label.vibe-btn(for='vibe4')
+              span.icon 💪
+              | Gym energy
+            input.vibe-option(type='radio' name='vibe' id='vibe5' value='Feel-good')
+            label.vibe-btn(for='vibe5')
+              span.icon ☀️
+              | Feel-good
+            input.vibe-option(type='radio' name='vibe' id='vibe6' value='Emotional')
+            label.vibe-btn(for='vibe6')
+              span.icon 💭
+              | Emotional
+            input.vibe-option(type='radio' name='vibe' id='vibe7' value='Focus mode')
+            label.vibe-btn(for='vibe7')
+              span.icon 🎯
+              | Focus mode
+            input.vibe-option(type='radio' name='vibe' id='vibe8' value='Party')
+            label.vibe-btn(for='vibe8')
+              span.icon 🎉
+              | Party
+
+          .sliders-row
+            .slider-group
+              label
+                span Mood
+                span#happy-val 😊
+              input(type='range' name='happy' min='1' max='5' value='3' oninput='updateMood(this)')
+              .slider-ends
+                span 😢 Sad
+                span 😄 Happy
+            .slider-group
+              label
+                span Energy
+                span#energy-val ⚡
+              input(type='range' name='score' min='1' max='5' value='3' oninput='updateEnergy(this)')
+              .slider-ends
+                span 😴 Calm
+                span 🚀 Energetic
+
+          span.vibe-label What situation fits this playlist?
+          .tags-grid
+            input.tag-check(type='checkbox' name='situation' id='sit1' value='Study')
+            label.tag-pill-btn(for='sit1') 📚 Study
+            input.tag-check(type='checkbox' name='situation' id='sit2' value='Party')
+            label.tag-pill-btn(for='sit2') 🎉 Party
+            input.tag-check(type='checkbox' name='situation' id='sit3' value='Rainy day')
+            label.tag-pill-btn(for='sit3') 🌧 Rainy day
+            input.tag-check(type='checkbox' name='situation' id='sit4' value='Road trip')
+            label.tag-pill-btn(for='sit4') 🚗 Road trip
+            input.tag-check(type='checkbox' name='situation' id='sit5' value='Heartbreak')
+            label.tag-pill-btn(for='sit5') 💔 Heartbreak
+            input.tag-check(type='checkbox' name='situation' id='sit6' value='Morning routine')
+            label.tag-pill-btn(for='sit6') ☀️ Morning routine
+            input.tag-check(type='checkbox' name='situation' id='sit7' value='Late night')
+            label.tag-pill-btn(for='sit7') 🌙 Late night
+            input.tag-check(type='checkbox' name='situation' id='sit8' value='Workout')
+            label.tag-pill-btn(for='sit8') 💪 Workout
+            input.tag-check(type='checkbox' name='situation' id='sit9' value='Focus')
+            label.tag-pill-btn(for='sit9') 🎯 Focus
+            input.tag-check(type='checkbox' name='situation' id='sit10' value='Chill session')
+            label.tag-pill-btn(for='sit10') 😌 Chill session
+
+          textarea.form-textarea(name='comment' placeholder='Anything else to say about this playlist? (optional)' rows='3')
+
+          button.submit-btn(type='submit') Drop the vibe ✓
+
+      h2.section-title Recent Vibes
+
+      if ratings && ratings.length
+        each rating in ratings
+          .rating-card
+            .rating-top
+              .rating-users
+                strong= rating.rater_name
+                |  vibed on 
+                strong= rating.ratee_name
+                | 's playlist
+              if rating.vibe
+                .rating-vibe-badge
+                  | #{rating.vibe}
+            .mood-bars
+              .mood-item
+                | Energy
+                .mood-bar-track
+                  .mood-bar-fill(style=`width:${(rating.score/5)*100}%`)
+                | #{rating.score}/5
+            if rating.situations && rating.situations.length
+              .situation-tags
+                each sit in rating.situations
+                  span.situation-tag= sit
+            if rating.comment
+              p.rating-comment= rating.comment
+      else
+        .empty-state
+          h3 No vibes dropped yet
+          p Be the first to rate a playlist exchange!
+
+    script.
+      const moodEmojis = ['😢','😕','😐','😊','😄'];
+      const energyEmojis = ['😴','🌿','⚡','🔥','🚀'];
+      function updateMood(el) {
+        document.getElementById('happy-val').textContent = moodEmojis[el.value-1];
+      }
+      function updateEnergy(el) {
+        document.getElementById('energy-val').textContent = energyEmojis[el.value-1];
+      }

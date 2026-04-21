@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  .playlist-detail-page
+    .playlist-header
+      h2= pl.name
+      p.playlist-desc= pl.decription
+      .playlist-meta
+        span.meta-item Songs: 
+          strong= pl.songs.length
+
+      if pl.tags && pl.tags.length
+        .tag-row
+          each tag in pl.tags
+            span.tag-pill= tag.name
+
+    h3.section-heading Songs in this playlist
+
+    if pl.songs && pl.songs.length
+      .songs-grid
+        each song in pl.songs
+          .song-card
+            .song-card-top
+              .song-info
+                p.song-title= song.title
+                p.song-artist= song.artist
+                if song.album
+                  p.song-album= song.album
+              .song-meta
+                if song.genre
+                  span.song-genre= song.genre
+                if song.duration_secs
+                  span.song-duration
+                    | #{Math.floor(song.duration_secs / 60)}:#{String(song.duration_secs % 60).padStart(2, '0')}
+            .song-card-bottom
+              if song.spotify_url
+                a.spotify-btn(href=song.spotify_url target='_blank' rel='noopener noreferrer')
+                  | Open in Spotify
+              else
+                span.no-spotify No Spotify link yet
+    else
+      p.empty-songs No songs in this playlist yet.
