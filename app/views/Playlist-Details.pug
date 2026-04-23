@@ -4,6 +4,9 @@ block content
   .playlist-detail-page
     .playlist-header
       h2= pl.name
+      if pl.owner_name
+        p.playlist-owner by 
+          strong= pl.owner_name
       p.playlist-desc= pl.decription
       .playlist-meta
         span.meta-item Songs: 
@@ -40,3 +43,149 @@ block content
                 span.no-spotify No Spotify link yet
     else
       p.empty-songs No songs in this playlist yet.
+
+    if pl.user_id
+      .rate-section
+        h3.section-heading Drop a vibe on this playlist
+        p.rate-subtitle Let #{pl.owner_name || 'the owner'} know what you think ♡
+
+        form(action=`/rate/${pl.user_id}` method='POST')
+          input(type='hidden' name='playlist_id' value=pl.id)
+          input(type='hidden' name='playlist_title' value=pl.name)
+
+          span.vibe-label What's the vibe?
+          .vibe-grid
+            input.vibe-option(type='radio' name='vibe' id='vibe1' value='Chill')
+            label.vibe-btn(for='vibe1')
+              span.icon 🌙
+              | Chill
+            input.vibe-option(type='radio' name='vibe' id='vibe2' value='Hype')
+            label.vibe-btn(for='vibe2')
+              span.icon 🔥
+              | Hype
+            input.vibe-option(type='radio' name='vibe' id='vibe3' value='Late-night')
+            label.vibe-btn(for='vibe3')
+              span.icon 🚗
+              | Late-night
+            input.vibe-option(type='radio' name='vibe' id='vibe4' value='Gym energy')
+            label.vibe-btn(for='vibe4')
+              span.icon 💪
+              | Gym energy
+            input.vibe-option(type='radio' name='vibe' id='vibe5' value='Feel-good')
+            label.vibe-btn(for='vibe5')
+              span.icon ☀️
+              | Feel-good
+            input.vibe-option(type='radio' name='vibe' id='vibe6' value='Emotional')
+            label.vibe-btn(for='vibe6')
+              span.icon 💭
+              | Emotional
+            input.vibe-option(type='radio' name='vibe' id='vibe7' value='Focus mode')
+            label.vibe-btn(for='vibe7')
+              span.icon 🎯
+              | Focus mode
+            input.vibe-option(type='radio' name='vibe' id='vibe8' value='Party')
+            label.vibe-btn(for='vibe8')
+              span.icon 🎉
+              | Party
+
+          .sliders-row
+            .slider-group
+              label
+                span Mood
+                span#happy-val 😊
+              input(type='range' name='happy' min='1' max='5' value='3' oninput='updateMood(this)')
+              .slider-ends
+                span 😢 Sad
+                span 😄 Happy
+            .slider-group
+              label
+                span Energy
+                span#energy-val ⚡
+              input(type='range' name='score' min='1' max='5' value='3' oninput='updateEnergy(this)')
+              .slider-ends
+                span 😴 Calm
+                span 🚀 Energetic
+
+          span.vibe-label What situation fits this playlist?
+          .tags-grid
+            input.tag-check(type='checkbox' name='situation' id='sit1' value='Study')
+            label.tag-pill-btn(for='sit1') 📚 Study
+            input.tag-check(type='checkbox' name='situation' id='sit2' value='Party')
+            label.tag-pill-btn(for='sit2') 🎉 Party
+            input.tag-check(type='checkbox' name='situation' id='sit3' value='Rainy day')
+            label.tag-pill-btn(for='sit3') 🌧 Rainy day
+            input.tag-check(type='checkbox' name='situation' id='sit4' value='Road trip')
+            label.tag-pill-btn(for='sit4') 🚗 Road trip
+            input.tag-check(type='checkbox' name='situation' id='sit5' value='Heartbreak')
+            label.tag-pill-btn(for='sit5') 💔 Heartbreak
+            input.tag-check(type='checkbox' name='situation' id='sit6' value='Morning routine')
+            label.tag-pill-btn(for='sit6') ☀️ Morning routine
+            input.tag-check(type='checkbox' name='situation' id='sit7' value='Late night')
+            label.tag-pill-btn(for='sit7') 🌙 Late night
+            input.tag-check(type='checkbox' name='situation' id='sit8' value='Workout')
+            label.tag-pill-btn(for='sit8') 💪 Workout
+            input.tag-check(type='checkbox' name='situation' id='sit9' value='Focus')
+            label.tag-pill-btn(for='sit9') 🎯 Focus
+            input.tag-check(type='checkbox' name='situation' id='sit10' value='Chill session')
+            label.tag-pill-btn(for='sit10') 😌 Chill session
+
+          textarea.rate-comment(name='comment' placeholder='Anything else to say? (optional)' rows='3')
+          button.submit-btn(type='submit') Drop the vibe ✓
+
+  style.
+    .rate-section {
+      margin-top: 3rem;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #d7e4d2;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(85,107,85,0.08);
+    }
+    .rate-subtitle { color: #6b756b; margin-bottom: 24px; font-size: 0.95rem; }
+    .playlist-owner { color: #557a57; font-size: 0.95rem; margin-bottom: 4px; }
+    .vibe-label { font-weight: bold; font-size: 0.95rem; margin-bottom: 12px; display: block; }
+    .vibe-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .vibe-option { display: none; }
+    .vibe-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 12px 18px; border: 2px solid #d7e4d2; border-radius: 16px;
+      cursor: pointer; background: #f4f8f2; transition: all 0.18s ease;
+      font-size: 0.9rem; color: #2f3a2f; min-width: 90px;
+    }
+    .vibe-btn .icon { font-size: 1.6rem; }
+    .vibe-option:checked + .vibe-btn {
+      border-color: #90b08b; background: #e4f0e0; font-weight: bold;
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(144,176,139,0.3);
+    }
+    .sliders-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    .slider-group label { display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; }
+    .slider-ends { display: flex; justify-content: space-between; font-size: 0.8rem; color: #6b756b; margin-top: 6px; }
+    input[type="range"] { width: 100%; accent-color: #90b08b; cursor: pointer; }
+    .tags-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .tag-check { display: none; }
+    .tag-pill-btn {
+      padding: 7px 14px; border: 1.5px solid #d7e4d2; border-radius: 999px;
+      font-size: 0.88rem; cursor: pointer; background: #f4f8f2; color: #2f3a2f; transition: all 0.15s ease;
+    }
+    .tag-check:checked + .tag-pill-btn { background: #b7d3b0; border-color: #90b08b; font-weight: bold; }
+    .rate-comment {
+      width: 100%; padding: 12px 16px; border: 1px solid #d7e4d2; border-radius: 12px;
+      font-family: inherit; font-size: 1rem; background: white; outline: none;
+      margin-bottom: 20px; resize: vertical;
+    }
+    .rate-comment:focus { border-color: #90b08b; }
+    .submit-btn {
+      background: #90b08b; color: white; border: none; border-radius: 999px;
+      padding: 13px 32px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s ease;
+    }
+    .submit-btn:hover { transform: translateY(-1px); opacity: 0.93; }
+
+  script.
+    const moodEmojis = ['😢','😕','😐','😊','😄'];
+    const energyEmojis = ['😴','🌿','⚡','🔥','🚀'];
+    function updateMood(el) {
+      document.getElementById('happy-val').textContent = moodEmojis[el.value-1];
+    }
+    function updateEnergy(el) {
+      document.getElementById('energy-val').textContent = energyEmojis[el.value-1];
+    }
