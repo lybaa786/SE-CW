@@ -5,6 +5,12 @@ const Account = require("./models/account");
 
 var app = express();
 
+app.use(session({
+    secret: "playlistappsecret",
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(express.static("static"));
 app.set('view engine', 'pug');
 app.set('views', './app/views');
@@ -131,7 +137,6 @@ app.get("/playlists/:id/delete", async function(req, res) {
 });
 
 //  PAGES
-app.get("/Home", function(req, res) { res.render("Home-Page"); });
 app.get("/welcome", function(req, res) { res.render("welcome-Page"); });
 app.get("/Homee", function(req, res) { res.render("Homee"); });
 
@@ -181,7 +186,44 @@ app.get("/delete-account", async function(req, res) {
     }
 });
 
-app.get("/Login", function(req, res) { res.render("Login"); });
+app.get("/login", function(req, res) { res.render("Login"); });
+
+app.post("/login", async function(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.render("Login", { error: "All fields are required" });
+        }
+
+        const rows = await db.query(
+            "SELECT * FROM Account WHERE Email = ?",
+            [email]
+        );
+
+        if ( !rows || rows.length === 0) {
+            return res.render("Login", { error: "User not found" });
+        }
+
+        const user = rows[0];
+        const match = await bcrypt.compare(password, user.PasswordHash);
+
+        if (!match) {
+            return res.render("Login", { error: "Incorrect password" });
+        }
+
+        req.session.user = {
+            id: user.AccountID,
+            username: user.username,
+            email: user.Email
+        };
+
+        res.redirect("/Homee");
+    }   catch (err) {
+        console.log(err);
+        res.send("Error logging in");
+    }
+});
 app.get("/Account", function(req, res) { res.render("Account"); });
 
 //  PROFILE
