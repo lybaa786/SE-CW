@@ -1,4 +1,4 @@
-const session = require('express-session');
+const session = require('express-session')
 const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
@@ -135,21 +135,28 @@ app.get("/Home", function(req, res) { res.render("Home-Page"); });
 app.get("/welcome", function(req, res) { res.render("welcome-Page"); });
 app.get("/Homee", function(req, res) { res.render("Homee"); });
 
-//  ACCOUN
+//  ACCOUNT
 app.get("/create-account", function(req, res) {
     res.render("Create-Account");
 });
 
 app.post("/create-account", async function(req, res) {
     try {
-        const { username, email, password } = req.body;
-        if (!username || !email || !password) return res.send("All fields are required");
+        const { username, email, password, confirmPassword } = req.body;
+        if (!username || !email || !password || !confirmPassword) {
+            return res.render("Create-Account", { error: "All fields are required"});
+        }
+        if (password !== confirmPassword) {
+            return res.render("Create-Account", { error: "Passwords do not match" });
+        }
 
         const existing = await db.query(
             "SELECT * FROM Account WHERE Email = ? OR Username = ?",
             [email, username]
         );
-        if (existing.length > 0) return res.send("Username or email already exists");
+        if (existing.length > 0) {
+            return res.render("Create-Account", { error: "Username or email already exists" });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.query(
@@ -159,7 +166,7 @@ app.post("/create-account", async function(req, res) {
         res.redirect("/Login");
     } catch (err) {
         console.log(err);
-        res.send("Error creating account");
+        res.send(err.message);
     }
 });
 
