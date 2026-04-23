@@ -12,6 +12,7 @@ app.use(express.urlencoded({extended: true}));
 
 const db = require('./services/db');
 const Playlist = require("./models/playlist");
+const CURRENT_USER_ID = 1; // replace with req.session.userId when auth is wired properly
 
 //  HOME 
 app.get("/", function(req, res) {
@@ -77,33 +78,123 @@ app.get("/Browse-Playlist", async function(req, res) {
     }
 });
 
-//  PLAYLIST DETAIL
+// PLAYLIST DETAIL
 app.get("/playlists/:id", async function(req, res) {
-    try {
-        const pl = new Playlist(req.params.id);
-        await pl.getPlaylistName();
-        await pl.getSongs();
-        await pl.getTags();
-        res.render("Playlist-Details", { pl: pl });
-    } catch (err) {
-        console.log(err);
-        res.send("Error retrieving playlist");
-    }
+  try {
+    const pl = new Playlist(req.params.id);
+    await pl.loadPageData(CURRENT_USER_ID);
+
+    res.render("Playlist-Details", {
+      pl: pl,
+      flashMessage: req.query.msg || ""
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error retrieving playlist");
+  }
 });
 
-//  CREATE PLAYLIST
+// LIKE / UNLIKE
+app.post("/playlists/:id/like", async function(req, res) {
+  try {
+    if (req.body.action === "unlike") {
+      await Playlist.unlike(req.params.id, CURRENT_USER_ID);
+    } else {
+      await Playlist.like(req.params.id, CURRENT_USER_ID);
+    }
+
+    res.redirect(`/playlists/${req.params.id}`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error updating like");
+  }
+});
+
+// SAVE / UNSAVE
+app.post("/playlists/:id/save", async function(req, res) {
+  try {
+    if (req.body.action === "unsave") {
+      await Playlist.unsave(req.params.id, CURRENT_USER_ID);
+    } else {
+      await Playlist.save(req.params.id, CURRENT_USER_ID);
+    }
+
+    res.redirect(`/playlists/${req.params.id}`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error updating save");
+  }
+});
+
+// RATE
+app.post("/playlists/:id/rate", async function(req, res) {
+  try {
+    const score = Number(req.body.score);
+
+    if (!Number.isInteger(score) || score < 1 || score > 5) {
+      return res.redirect(`/playlists/${req.params.id}?msg=Choose%20a%20rating%20from%201%20to%205`);
+    }
+
+    await Playlist.rate(req.params.id, CURRENT_USER_ID, score);
+    res.redirect(`/playlists/${req.params.id}`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error rating playlist");
+  }
+});
+
+// COMMENT
+app.post("/playlists/:id/comment", async function(req, res) {
+  try {
+    const comment = (req.body.comment || "").trim();
+
+    if (!comment) {
+      return res.redirect(`/playlists/${req.params.id}?msg=Comment%20cannot%20be%20empty`);
+    }
+
+    await Playlist.addComment(req.params.id, CURRENT_USER_ID, comment);
+    res.redirect(`/playlists/${req.params.id}#comments`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error adding comment");
+  }
+});
+
+// REPORT
+app.post("/playlists/:id/report", async function(req, res) {
+  try {
+    await Playlist.report(
+      req.params.id,
+      CURRENT_USER_ID,
+      req.body.reason || "Inappropriate playlist"
+    );
+
+    res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error reporting playlist");
+  }
+});
+
+// CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
-    res.render("create-playlist");
+  res.render("create-playlist");
 });
 
 app.post("/create-playlist", async function(req, res) {
-    try {
-        await Playlist.createPlaylist(req.body.title, req.body.description);
-        res.redirect("/Browse-Playlist");
-    } catch (err) {
-        console.log(err);
-        res.send("Error creating playlist");
-    }
+  try {
+    const playlist = await Playlist.createPlaylist(
+      req.body.title,
+      req.body.description,
+      CURRENT_USER_ID,
+      req.body.genre || null
+    );
+
+    res.redirect(`/playlists/${playlist.id}`);
+  } catch (err) {
+    console.log(err);
+    res.send("Error creating playlist");
+  }
 });
 
 //  UPDATE PLAYLIST 

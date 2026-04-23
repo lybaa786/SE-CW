@@ -397,3 +397,87 @@ html, body {
   font-size: 16px;
   color: #333;
 }
+
+:root {
+  --sage: #b7d3b0;
+  --sage-dark: #90b08b;
+  --sage-soft: #eef6eb;
+  --text: #2f3a2f;
+  --muted: #6b756b;
+  --border: #d7e4d2;
+  --shadow: 0 10px 25px rgba(85, 107, 85, 0.08);
+}
+
+body {
+  background: linear-gradient(to bottom, #eef6eb, #f8faf7);
+  color: var(--text);
+  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+}
+
+.navbar {
+  background: rgba(183, 211, 176, 0.95);
+  border-bottom: 1px solid #9eb89a;
+  padding: 14px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(6px);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.7rem;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.navbar a {
+  color: var(--text);
+  text-decoration: none;
+  margin-left: 0;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.navbar .login {
+  background: var(--sage-dark);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.navbar .login:hover {
+  text-decoration: none;
+  opacity: 0.95;
+}
+
+.site-main {
+  min-height: calc(100vh - 140px);
+}
+
+.footer {
+  padding: 18px 24px 28px;
+  color: var(--text);
+}
+
+.footer p {
+  margin: 0;
+}
