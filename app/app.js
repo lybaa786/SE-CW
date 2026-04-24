@@ -335,7 +335,8 @@ app.get("/profile/:username", async function(req, res) {
 //  RATINGS 
 app.post('/rate/:userId', async function(req, res) {
     try {
-        const { score, comment, vibe, happy } = req.body;
+        const { score, comment, vibe, happy, playlistId } = req.body;
+
         const situations = req.body.situation
             ? (Array.isArray(req.body.situation) ? req.body.situation : [req.body.situation])
             : [];
@@ -344,7 +345,8 @@ app.post('/rate/:userId', async function(req, res) {
             vibe: vibe || null,
             happy: happy || 3,
             situations: situations,
-            comment: comment || ''
+            comment: comment || '',
+            playlistId: playlistId || null
         });
 
         await db.query(
@@ -353,6 +355,11 @@ app.post('/rate/:userId', async function(req, res) {
              ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
             [1, req.params.userId, 1, score, fullComment]
         );
+
+        if (playlistId) {
+            return res.redirect(`/playlists/${playlistId}`);
+        }
+
         res.redirect('/ratings');
     } catch (err) {
         console.log(err);
@@ -362,6 +369,22 @@ app.post('/rate/:userId', async function(req, res) {
 
 app.get('/ratings', async function(req, res) {
     try {
+        const targetUserId = Number(req.query.userId) || 2;
+        const playlistId = Number(req.query.playlistId) || null;
+
+        let playlistName = null;
+
+        if (playlistId) {
+            const playlistRows = await db.query(
+                'SELECT title FROM playlist WHERE id = ? LIMIT 1',
+                [playlistId]
+            );
+
+            if (playlistRows.length) {
+                playlistName = playlistRows[0].title;
+            }
+        }
+
         const rawRatings = await db.query(`
             SELECT r.*,
                    u1.name as rater_name,
@@ -379,15 +402,50 @@ app.get('/ratings', async function(req, res) {
                     ...r,
                     vibe: parsed.vibe,
                     situations: parsed.situations || [],
-                    comment: parsed.comment,
-                    happy: parsed.happy
+                    comment: parsed.comment || '',
+                    happy: parsed.happy,
+                    playlist_id: parsed.playlistId || null
                 };
-            } catch(e) {
-                return { ...r, vibe: null, situations: [], comment: r.comment };
+            } catch (e) {
+                return {
+                    ...r,
+                    vibe: null,
+                    situations: [],
+                    comment: r.comment,
+                    happy: null,
+                    playlist_id: null
+                };
             }
         });
 
-        res.render('ratings', { ratings });
+        const playlistIds = [...new Set(
+            ratings.map(r => r.playlist_id).filter(Boolean)
+        )];
+
+        let playlistMap = {};
+        if (playlistIds.length) {
+            const placeholders = playlistIds.map(() => '?').join(',');
+            const playlistRows = await db.query(
+                `SELECT id, title FROM playlist WHERE id IN (${placeholders})`,
+                playlistIds
+            );
+
+            playlistMap = Object.fromEntries(
+                playlistRows.map(p => [p.id, p.title])
+            );
+        }
+
+        const ratingsWithTitles = ratings.map(r => ({
+            ...r,
+            playlist_title: r.playlist_id ? playlistMap[r.playlist_id] || null : null
+        }));
+
+        res.render('ratings', {
+            ratings: ratingsWithTitles,
+            targetUserId,
+            playlistId,
+            playlistName
+        });
     } catch (err) {
         console.log(err);
         res.send('Error loading ratings');
