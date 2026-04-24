@@ -5,10 +5,11 @@ block content
     .container 
       h2 Create New Playlist
       form(action="/create-playlist" method="POST")
-        label(for="name") Playlist Title:
-        input(type="text" id="name" name="name" required)
+        label(for="title") Playlist Title:
+        input(type="text" id="title" name="title" required)
              
         label(for="description") Description:
         textarea(id="description" name="description" required)
              
         button(type="submit") Create Playlist
+
