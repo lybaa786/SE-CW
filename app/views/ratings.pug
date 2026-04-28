@@ -139,7 +139,12 @@ html(lang="en")
       .form-card
         h2 How was this playlist?
 
-        form(action='/rate/2' method='POST')
+        if playlistName
+          p.page-subtitle Rating for #{playlistName}
+
+        form(action=`/rate/${targetUserId}` method='POST')
+          if playlistId
+            input(type='hidden' name='playlistId' value=playlistId)
 
           span.vibe-label What's the vibe?
           .vibe-grid

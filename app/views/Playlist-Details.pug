@@ -47,15 +47,7 @@ block content
               | ❤️ Like
               span.count= pl.stats.likesCount
 
-          form.inline-form(action=`/playlists/${pl.id}/rate` method="POST")
-            select.rate-select(name="score")
-              option(value="") Rate
-              option(value="1" selected=pl.viewerState.rating === 1) 1 ★
-              option(value="2" selected=pl.viewerState.rating === 2) 2 ★
-              option(value="3" selected=pl.viewerState.rating === 3) 3 ★
-              option(value="4" selected=pl.viewerState.rating === 4) 4 ★
-              option(value="5" selected=pl.viewerState.rating === 5) 5 ★
-            button.action-btn(type="submit") ⭐ Rate
+          a.action-btn(href=`/ratings?userId=${pl.ownerId}&playlistId=${pl.id}`) ⭐ Rate
 
           a.action-btn.comment-jump(href="#comment-form")
             | 💬 Comment

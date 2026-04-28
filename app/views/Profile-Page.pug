@@ -1,20 +1,13 @@
 extends layout
 
-block navbar
-  nav.navbar
-    .nav-right
-      .profile-dropdown
-        a.profile-trigger.animated-btn(href="#") Profile
-        .dropdown-menu
-          a(href="/Homee") Homepage
-          a(href="/delete-account") Delete Account
-          a(href="/Login") Logout
-
 block content
   .profile-page
     .profile-card
       .pro-image
-      h2= user.Username
-      h3= user.username
+      h2= user.username
       p= user.Email
-            
+      .profile-actions
+        a.btn(href="/Browse-Playlist") Browse Playlists
+        a.btn(href="/create-playlist") Create Playlist
+        a.btn.btn-danger(href=`/delete-account?email=${user.Email}` onclick="return confirm('Are you sure you want to delete your account?')") Delete Account
+        a.btn(href="/logout") Logout

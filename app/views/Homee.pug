@@ -1,17 +1,14 @@
 extends layout
 
-
-block navbar 
-  nav.navbar 
-    .nav-right 
-      .profile-dropdown
-        a.profile-trigger.animated-btn(href="#") Profile 
-        .dropdown-menu
-          a(href="/Accounts") My Account
-          a(href="/Browse-Playlist") Browse Playlist 
-          a(href="/Login") Logout
-
 block content
   .homee-page
     .container
-      h1 Welcome to Home Page
+      if currentUser
+        h1 Welcome back, #{currentUser.username}! 🎵
+      else
+        h1 Welcome to PlaylistExchange!
+      p.subtitle Find your vibe, set your mood and share it all!
+      .home-actions
+        a.btn-primary(href="/Browse-Playlist") Browse Playlists
+        a.btn-secondary(href="/create-playlist") + Create Playlist
+        a.btn-secondary(href="/ratings") View Vibes
