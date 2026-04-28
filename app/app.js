@@ -5,7 +5,6 @@ const Account = require("./models/account");
 const fetch = require("node-fetch");
 
 var app = express();
-``
 app.use(session({
     secret: "playlistappsecret",
     resave: false,
@@ -33,8 +32,12 @@ function getCurrentUserId(req) {
 }
 
 // HOME
+app.get("/", function(req, res) {
+    res.render("welcome");
+});
+
 app.get("/welcome", function(req, res) {
-    res.render("index");
+    res.render("welcome");
 });
 
 // BROWSE PLAYLISTS
