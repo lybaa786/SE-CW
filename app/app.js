@@ -342,18 +342,22 @@ app.post('/rate/:userId', async function(req, res) {
             playlistId: playlistId || null
         });
 
+        const raterId = req.session.user ? req.session.user.id : 1;
+        const rateeId = parseInt(req.params.userId) || 1;
+        const exchangeId = parseInt(playlistId) || 1;
+
         await db.query(
             `INSERT INTO ratings (rater_id, ratee_id, exchange_id, score, comment)
              VALUES (?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
-            [getCurrentUserId(req), req.params.userId, 1, score, fullComment]
+            [raterId, rateeId, exchangeId, score || 3, fullComment]
         );
 
         if (playlistId) return res.redirect(`/playlists/${playlistId}`);
         res.redirect('/ratings');
     } catch (err) {
-        console.log(err);
-        res.send('Error submitting rating');
+        console.log('Rating error:', err.message);
+        res.send('Error submitting rating: ' + err.message);
     }
 });
 
