@@ -33,7 +33,7 @@ function getCurrentUserId(req) {
 }
 
 // HOME
-app.get("/", function(req, res) {
+app.get("/welcome", function(req, res) {
     res.render("index");
 });
 
