@@ -9,15 +9,20 @@ html(lang="en")
   body
     nav.navbar
       .nav-inner
-        a.logo(href="/Browse-Playlist") PlaylistExchange
-
+        a.logo(href="/") PlaylistExchange
         .nav-right
           a(href="/Browse-Playlist") Browse
           a(href="/ratings") Ratings
-          a.login(href="/Login") Login
+          a(href="/create-playlist") + New Playlist
+          if currentUser
+            a(href=`/profile/${currentUser.username}`) #{currentUser.username}
+            a.btn-logout(href="/logout") Logout
+          else	
+            a.login(href="/Login") Login
+            a.login(href="/create-account") Register
 
     main.site-main
       block content
 
     footer.footer
-      p © 2026 Share Playlist App. All rights reserved.
+      p © 2026 PlaylistExchange. All rights reserved.
