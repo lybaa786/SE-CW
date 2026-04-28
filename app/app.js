@@ -1,4 +1,4 @@
-const session = require('express-session')
+const session = require('express-session');
 const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
@@ -8,24 +8,35 @@ var app = express();
 app.use(session({
     secret: "playlistappsecret",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
 app.use(express.static("static"));
 app.set('view engine', 'pug');
 app.set('views', './app/views');
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 const db = require('./services/db');
 const Playlist = require("./models/playlist");
-const CURRENT_USER_ID = 1; // replace with req.session.userId when auth is wired properly
 
-//  HOME 
+// Make currentUser available in ALL templates
+app.use((req, res, next) => {
+    res.locals.currentUser = req.session.user || null;
+    next();
+});
+
+// Helper - get current user ID from session or default to 1
+function getCurrentUserId(req) {
+    return req.session.user ? req.session.user.id : 1;
+}
+
+// HOME
 app.get("/", function(req, res) {
     res.render("index");
 });
 
-// BROWSE PLAYLISTS 
+// BROWSE PLAYLISTS
 app.get("/Browse-Playlist", async function(req, res) {
     try {
         const selectedTag = req.query.tag || "";
@@ -37,8 +48,7 @@ app.get("/Browse-Playlist", async function(req, res) {
         else if (sort === "oldest") orderBy = "p.created_at ASC";
 
         let sql = `
-            SELECT 
-                p.id, p.title, p.description, p.created_at, p.user_id,
+            SELECT p.id, p.title, p.description, p.created_at, p.user_id,
                 u.name AS username,
                 GROUP_CONCAT(t.name SEPARATOR ',') AS tags
             FROM playlist p
@@ -86,124 +96,111 @@ app.get("/Browse-Playlist", async function(req, res) {
 
 // PLAYLIST DETAIL
 app.get("/playlists/:id", async function(req, res) {
-  try {
-    const pl = new Playlist(req.params.id);
-    await pl.loadPageData(CURRENT_USER_ID);
-
-    res.render("Playlist-Details", {
-      pl: pl,
-      flashMessage: req.query.msg || ""
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error retrieving playlist");
-  }
+    try {
+        const pl = new Playlist(req.params.id);
+        await pl.loadPageData(getCurrentUserId(req));
+        res.render("Playlist-Details", {
+            pl: pl,
+            flashMessage: req.query.msg || ""
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error retrieving playlist");
+    }
 });
 
 // LIKE / UNLIKE
 app.post("/playlists/:id/like", async function(req, res) {
-  try {
-    if (req.body.action === "unlike") {
-      await Playlist.unlike(req.params.id, CURRENT_USER_ID);
-    } else {
-      await Playlist.like(req.params.id, CURRENT_USER_ID);
+    try {
+        if (req.body.action === "unlike") {
+            await Playlist.unlike(req.params.id, getCurrentUserId(req));
+        } else {
+            await Playlist.like(req.params.id, getCurrentUserId(req));
+        }
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error updating like");
     }
-
-    res.redirect(`/playlists/${req.params.id}`);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error updating like");
-  }
 });
 
 // SAVE / UNSAVE
 app.post("/playlists/:id/save", async function(req, res) {
-  try {
-    if (req.body.action === "unsave") {
-      await Playlist.unsave(req.params.id, CURRENT_USER_ID);
-    } else {
-      await Playlist.save(req.params.id, CURRENT_USER_ID);
+    try {
+        if (req.body.action === "unsave") {
+            await Playlist.unsave(req.params.id, getCurrentUserId(req));
+        } else {
+            await Playlist.save(req.params.id, getCurrentUserId(req));
+        }
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error updating save");
     }
-
-    res.redirect(`/playlists/${req.params.id}`);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error updating save");
-  }
 });
 
-// RATE
+// RATE PLAYLIST
 app.post("/playlists/:id/rate", async function(req, res) {
-  try {
-    const score = Number(req.body.score);
-
-    if (!Number.isInteger(score) || score < 1 || score > 5) {
-      return res.redirect(`/playlists/${req.params.id}?msg=Choose%20a%20rating%20from%201%20to%205`);
+    try {
+        const score = Number(req.body.score);
+        if (!Number.isInteger(score) || score < 1 || score > 5) {
+            return res.redirect(`/playlists/${req.params.id}?msg=Choose%20a%20rating%20from%201%20to%205`);
+        }
+        await Playlist.rate(req.params.id, getCurrentUserId(req), score);
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error rating playlist");
     }
-
-    await Playlist.rate(req.params.id, CURRENT_USER_ID, score);
-    res.redirect(`/playlists/${req.params.id}`);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error rating playlist");
-  }
 });
 
 // COMMENT
 app.post("/playlists/:id/comment", async function(req, res) {
-  try {
-    const comment = (req.body.comment || "").trim();
-
-    if (!comment) {
-      return res.redirect(`/playlists/${req.params.id}?msg=Comment%20cannot%20be%20empty`);
+    try {
+        const comment = (req.body.comment || "").trim();
+        if (!comment) {
+            return res.redirect(`/playlists/${req.params.id}?msg=Comment%20cannot%20be%20empty`);
+        }
+        await Playlist.addComment(req.params.id, getCurrentUserId(req), comment);
+        res.redirect(`/playlists/${req.params.id}#comments`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error adding comment");
     }
-
-    await Playlist.addComment(req.params.id, CURRENT_USER_ID, comment);
-    res.redirect(`/playlists/${req.params.id}#comments`);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error adding comment");
-  }
 });
 
 // REPORT
 app.post("/playlists/:id/report", async function(req, res) {
-  try {
-    await Playlist.report(
-      req.params.id,
-      CURRENT_USER_ID,
-      req.body.reason || "Inappropriate playlist"
-    );
-
-    res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Error reporting playlist");
-  }
+    try {
+        await Playlist.report(req.params.id, getCurrentUserId(req), req.body.reason || "Inappropriate playlist");
+        res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error reporting playlist");
+    }
 });
 
 // CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
-  res.render("create-playlist");
+    res.render("create-playlist");
 });
 
 app.post("/create-playlist", async function(req, res) {
-  try {
-    const playlist = await Playlist.createPlaylist(
-      req.body.title,
-      req.body.description,
-      CURRENT_USER_ID,
-      req.body.genre || null
-    );
-
-    res.redirect(`/playlists/${playlist.id}`);
-  } catch (err) {
-    console.log(err);
-    res.send("Error creating playlist");
-  }
+    try {
+        const playlist = await Playlist.createPlaylist(
+            req.body.title,
+            req.body.description,
+            getCurrentUserId(req),
+            req.body.genre || null
+        );
+        res.redirect(`/playlists/${playlist.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error creating playlist");
+    }
 });
 
-//  UPDATE PLAYLIST 
+// UPDATE PLAYLIST
 app.post("/playlists/:id/update", async function(req, res) {
     try {
         const pl = new Playlist(req.params.id);
@@ -215,7 +212,7 @@ app.post("/playlists/:id/update", async function(req, res) {
     }
 });
 
-//  DELETE PLAYLIST 
+// DELETE PLAYLIST
 app.get("/playlists/:id/delete", async function(req, res) {
     try {
         const pl = new Playlist(req.params.id);
@@ -227,25 +224,59 @@ app.get("/playlists/:id/delete", async function(req, res) {
     }
 });
 
-//  PAGES
-app.get("/welcome", function(req, res) { res.render("welcome-Page"); });
-app.get("/Homee", function(req, res) { res.render("Homee"); });
+// LOGIN
+app.get("/Login", function(req, res) {
+    if (req.session.user) return res.redirect("/Browse-Playlist");
+    res.render("Login", { error: null });
+});
 
-//  ACCOUNT
+app.post("/login", async function(req, res) {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.render("Login", { error: "All fields are required" });
+        }
+        const rows = await db.query("SELECT * FROM Account WHERE Email = ?", [email]);
+        if (!rows || rows.length === 0) {
+            return res.render("Login", { error: "User not found" });
+        }
+        const user = rows[0];
+        const match = await bcrypt.compare(password, user.PasswordHash);
+        if (!match) {
+            return res.render("Login", { error: "Incorrect password" });
+        }
+        req.session.user = {
+            id: user.AccountID,
+            username: user.username,
+            email: user.Email
+        };
+        res.redirect("/Browse-Playlist");
+    } catch (err) {
+        console.log(err);
+        res.render("Login", { error: "Something went wrong" });
+    }
+});
+
+// LOGOUT
+app.get("/logout", function(req, res) {
+    req.session.destroy();
+    res.redirect("/");
+});
+
+// CREATE ACCOUNT
 app.get("/create-account", function(req, res) {
-    res.render("Create-Account");
+    res.render("Create-Account", { error: null });
 });
 
 app.post("/create-account", async function(req, res) {
     try {
         const { username, email, password, confirmPassword } = req.body;
         if (!username || !email || !password || !confirmPassword) {
-            return res.render("Create-Account", { error: "All fields are required"});
+            return res.render("Create-Account", { error: "All fields are required" });
         }
         if (password !== confirmPassword) {
             return res.render("Create-Account", { error: "Passwords do not match" });
         }
-
         const existing = await db.query(
             "SELECT * FROM Account WHERE Email = ? OR Username = ?",
             [email, username]
@@ -253,7 +284,6 @@ app.post("/create-account", async function(req, res) {
         if (existing.length > 0) {
             return res.render("Create-Account", { error: "Username or email already exists" });
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.query(
             "INSERT INTO Account (Username, Email, PasswordHash) VALUES (?, ?, ?)",
@@ -277,47 +307,7 @@ app.get("/delete-account", async function(req, res) {
     }
 });
 
-app.get("/login", function(req, res) { res.render("Login"); });
-
-app.post("/login", async function(req, res) {
-    try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.render("Login", { error: "All fields are required" });
-        }
-
-        const rows = await db.query(
-            "SELECT * FROM Account WHERE Email = ?",
-            [email]
-        );
-
-        if ( !rows || rows.length === 0) {
-            return res.render("Login", { error: "User not found" });
-        }
-
-        const user = rows[0];
-        const match = await bcrypt.compare(password, user.PasswordHash);
-
-        if (!match) {
-            return res.render("Login", { error: "Incorrect password" });
-        }
-
-        req.session.user = {
-            id: user.AccountID,
-            username: user.username,
-            email: user.Email
-        };
-
-        res.redirect("/Homee");
-    }   catch (err) {
-        console.log(err);
-        res.send("Error logging in");
-    }
-});
-app.get("/Account", function(req, res) { res.render("Account"); });
-
-//  PROFILE
+// PROFILE
 app.get("/profile/:username", async function(req, res) {
     try {
         const rows = await db.query(
@@ -332,11 +322,10 @@ app.get("/profile/:username", async function(req, res) {
     }
 });
 
-//  RATINGS 
+// VIBE RATINGS
 app.post('/rate/:userId', async function(req, res) {
     try {
         const { score, comment, vibe, happy, playlistId } = req.body;
-
         const situations = req.body.situation
             ? (Array.isArray(req.body.situation) ? req.body.situation : [req.body.situation])
             : [];
@@ -353,13 +342,10 @@ app.post('/rate/:userId', async function(req, res) {
             `INSERT INTO ratings (rater_id, ratee_id, exchange_id, score, comment)
              VALUES (?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
-            [1, req.params.userId, 1, score, fullComment]
+            [getCurrentUserId(req), req.params.userId, 1, score, fullComment]
         );
 
-        if (playlistId) {
-            return res.redirect(`/playlists/${playlistId}`);
-        }
-
+        if (playlistId) return res.redirect(`/playlists/${playlistId}`);
         res.redirect('/ratings');
     } catch (err) {
         console.log(err);
@@ -369,22 +355,6 @@ app.post('/rate/:userId', async function(req, res) {
 
 app.get('/ratings', async function(req, res) {
     try {
-        const targetUserId = Number(req.query.userId) || 2;
-        const playlistId = Number(req.query.playlistId) || null;
-
-        let playlistName = null;
-
-        if (playlistId) {
-            const playlistRows = await db.query(
-                'SELECT title FROM playlist WHERE id = ? LIMIT 1',
-                [playlistId]
-            );
-
-            if (playlistRows.length) {
-                playlistName = playlistRows[0].title;
-            }
-        }
-
         const rawRatings = await db.query(`
             SELECT r.*,
                    u1.name as rater_name,
@@ -407,32 +377,18 @@ app.get('/ratings', async function(req, res) {
                     playlist_id: parsed.playlistId || null
                 };
             } catch (e) {
-                return {
-                    ...r,
-                    vibe: null,
-                    situations: [],
-                    comment: r.comment,
-                    happy: null,
-                    playlist_id: null
-                };
+                return { ...r, vibe: null, situations: [], comment: r.comment, happy: null, playlist_id: null };
             }
         });
 
-        const playlistIds = [...new Set(
-            ratings.map(r => r.playlist_id).filter(Boolean)
-        )];
-
+        const playlistIds = [...new Set(ratings.map(r => r.playlist_id).filter(Boolean))];
         let playlistMap = {};
         if (playlistIds.length) {
             const placeholders = playlistIds.map(() => '?').join(',');
             const playlistRows = await db.query(
-                `SELECT id, title FROM playlist WHERE id IN (${placeholders})`,
-                playlistIds
+                `SELECT id, title FROM playlist WHERE id IN (${placeholders})`, playlistIds
             );
-
-            playlistMap = Object.fromEntries(
-                playlistRows.map(p => [p.id, p.title])
-            );
+            playlistMap = Object.fromEntries(playlistRows.map(p => [p.id, p.title]));
         }
 
         const ratingsWithTitles = ratings.map(r => ({
@@ -440,19 +396,14 @@ app.get('/ratings', async function(req, res) {
             playlist_title: r.playlist_id ? playlistMap[r.playlist_id] || null : null
         }));
 
-        res.render('ratings', {
-            ratings: ratingsWithTitles,
-            targetUserId,
-            playlistId,
-            playlistName
-        });
+        res.render('ratings', { ratings: ratingsWithTitles });
     } catch (err) {
         console.log(err);
         res.send('Error loading ratings');
     }
 });
 
-//  START
+// START
 app.listen(3000, function() {
     console.log(`Server running at http://127.0.0.1:3000/`);
 });
