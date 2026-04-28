@@ -2,9 +2,10 @@ const session = require('express-session');
 const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
+const fetch = require("node-fetch");
 
 var app = express();
-
+``
 app.use(session({
     secret: "playlistappsecret",
     resave: false,
@@ -401,6 +402,28 @@ app.get('/ratings', async function(req, res) {
         console.log(err);
         res.send('Error loading ratings');
     }
+});
+
+
+
+app.get("/music-search", async (req, res) => {
+  const searchTerm = req.query.q || "";
+
+  let songs = [];
+
+  if (searchTerm) {
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=music&limit=12`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    songs = data.results;
+  }
+
+  res.render("music-search", {
+    songs,
+    searchTerm
+  });
 });
 
 // START
