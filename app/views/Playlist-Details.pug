@@ -22,8 +22,8 @@ block content
               if pl.genre
                 span.meta-chip= pl.genre
               span.meta-chip #{pl.songs.length} song#{pl.songs.length === 1 ? '' : 's'}
-              if pl.stats.avgRating
-                span.meta-chip ⭐ #{pl.stats.avgRating}/5
+              if pl.stats.ratingsCount && pl.stats.ratingsCount > 0
+                span.meta-chip #{pl.stats.ratingsCount} rating#{pl.stats.ratingsCount === 1 ? '' : 's'}
               else
                 span.meta-chip No ratings yet
 
@@ -59,9 +59,18 @@ block content
               | 💾 Save
               span.count= pl.stats.savesCount
 
-          form.inline-form(action=`/playlists/${pl.id}/report` method="POST")
-            input(type="hidden" name="reason" value="Reported from playlist detail page")
-            button.action-btn.report-btn(type="submit") 🚩 Report
+      if currentUser
+        .detail-section
+          h2.section-title Add a Song
+          form.comment-form(action=`/playlists/${pl.id}/add-song` method='POST')
+            input.comment-input(type='text' name='title' placeholder='Song title *' required)
+            input.comment-input(type='text' name='artist' placeholder='Artist')
+            input.comment-input(type='text' name='album' placeholder='Album')
+            input.comment-input(type='text' name='genre' placeholder='Genre e.g. R&B, Pop')
+            input.comment-input(type='number' name='duration_secs' placeholder='Duration in seconds e.g. 209')
+            input.comment-input(type='text' name='spotify_url' placeholder='Spotify URL')
+            .comment-form-actions
+              button.primary-btn(type='submit') + Add Song
 
       .detail-section
         h2.section-title TrackList

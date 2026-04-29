@@ -3,6 +3,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
 const fetch = require("node-fetch");
+const apiKey = process.env.TICKETMASTER_API_KEY;
+
+require('dotenv').config();
 
 var app = express();
 app.use(session({
@@ -184,17 +187,6 @@ app.post("/playlists/:id/comment", async function(req, res) {
     }
 });
 
-// REPORT
-app.post("/playlists/:id/report", async function(req, res) {
-    try {
-        await Playlist.report(req.params.id, getCurrentUserId(req), req.body.reason || "Inappropriate playlist");
-        res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Error reporting playlist");
-    }
-});
-
 // CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
     res.render("create-playlist");
@@ -224,6 +216,22 @@ app.post("/playlists/:id/update", async function(req, res) {
     } catch (err) {
         console.log(err);
         res.send("Error updating playlist");
+    }
+});
+
+
+// ADD SONG TO PLAYLIST
+app.post("/playlists/:id/add-song", async function(req, res) {
+    try {
+        const { title, artist, album, genre, duration_secs, spotify_url } = req.body;
+        if (!title) return res.redirect(`/playlists/${req.params.id}?msg=Song title is required`);
+        await Playlist.addSong(
+            req.params.id, title, artist, album, genre, duration_secs, spotify_url
+        );
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error adding song: " + err.message);
     }
 });
 
@@ -307,7 +315,7 @@ app.get("/Homee", async function(req, res) {
 // LOGOUT
 app.get("/logout", function(req, res) {
     req.session.destroy();
-    res.redirect("/");
+    res.redirect("/welcome");
 });
 
 // CREATE ACCOUNT
@@ -611,7 +619,7 @@ app.get("/music-search", async function(req, res) {
   });
 });
 
-app.get("/concert-alerts", async function(req, res) {
+app.get("/live-music-alert", async function(req, res) {
   const apiKey = process.env.TICKETMASTER_API_KEY;
 
   const url =
@@ -621,9 +629,13 @@ app.get("/concert-alerts", async function(req, res) {
   const response = await fetch(url);
   const data = await response.json();
 
+  console.log ("API KEY:", apiKey);
+  console.log("URL:", url);
+  console.log("Data:", data);
+
   const events = data._embedded ? data._embedded.events : [];
 
-  res.render("concert-alerts", {
+  res.render("live-music-alert", {
     events
   });
 });
