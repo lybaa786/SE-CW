@@ -27,9 +27,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Helper - get current user ID from session or default to 1
+// Helper - get current user ID from session 
 function getCurrentUserId(req) {
-    return req.session.user ? req.session.user.id : 1;
+    return req.session.user ? req.session.user.id : null;
+}
+
+function requireLogin(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect(`/Login?msg=${encodeURIComponent("Please log in to comment")}`);
+    }
+    next();
 }
 
 //root for about page
@@ -189,22 +196,52 @@ app.post("/playlists/:id/report", async function(req, res) {
 });
 
 // CREATE PLAYLIST
-app.get("/create-playlist", function(req, res) {
-    res.render("create-playlist");
-});
-
-app.post("/create-playlist", async function(req, res) {
+app.post("/create-account", async function(req, res) {
     try {
-        const playlist = await Playlist.createPlaylist(
-            req.body.title,
-            req.body.description,
-            getCurrentUserId(req),
-            req.body.genre || null
+        const { username, email, password, confirmPassword } = req.body;
+
+        if (!username || !email || !password || !confirmPassword) {
+            return res.render("Create-Account", { error: "All fields are required" });
+        }
+
+        if (password !== confirmPassword) {
+            return res.render("Create-Account", { error: "Passwords do not match" });
+        }
+
+        const existing = await db.query(
+            "SELECT * FROM Account WHERE Email = ? OR Username = ?",
+            [email, username]
         );
-        res.redirect(`/playlists/${playlist.id}`);
+
+        if (existing.length > 0) {
+            return res.render("Create-Account", { error: "Username or email already exists" });
+        }
+
+        const existingUser = await db.query(
+            "SELECT * FROM users WHERE email = ? LIMIT 1",
+            [email]
+        );
+
+        if (existingUser.length > 0) {
+            return res.render("Create-Account", { error: "A user with that email already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await db.query(
+            "INSERT INTO Account (Username, Email, PasswordHash) VALUES (?, ?, ?)",
+            [username, email, hashedPassword]
+        );
+
+        await db.query(
+            "INSERT INTO users (name, email, password, bio, profile_pic) VALUES (?, ?, ?, ?, ?)",
+            [username, email, "", "", null]
+        );
+
+        res.redirect("/Login");
     } catch (err) {
         console.log(err);
-        res.send("Error creating playlist");
+        res.send(err.message);
     }
 });
 
@@ -241,30 +278,54 @@ app.get("/Login", function(req, res) {
 app.post("/login", async function(req, res) {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.render("Login", { error: "All fields are required" });
         }
-        const rows = await db.query("SELECT * FROM Account WHERE Email = ?", [email]);
+
+        const rows = await db.query(
+            "SELECT * FROM Account WHERE Email = ? LIMIT 1",
+            [email]
+        );
+
         if (!rows || rows.length === 0) {
             return res.render("Login", { error: "User not found" });
         }
-        const user = rows[0];
-        const match = await bcrypt.compare(password, user.PasswordHash);
+
+        const account = rows[0];
+        const match = await bcrypt.compare(password, account.PasswordHash);
+
         if (!match) {
             return res.render("Login", { error: "Incorrect password" });
         }
+
+        // Get the matching row from users table
+        const userRows = await db.query(
+            "SELECT * FROM users WHERE email = ? LIMIT 1",
+            [account.Email]
+        );
+
+        if (!userRows || userRows.length === 0) {
+            return res.render("Login", {
+                error: "This account does not have a linked user profile yet"
+            });
+        }
+
+        const dbUser = userRows[0];
+
         req.session.user = {
-            id: user.AccountID,
-            username: user.username,
-            email: user.Email
+            id: dbUser.id,          // THIS must be users.id
+            username: dbUser.name,
+            email: dbUser.email,
+            accountId: account.AccountID
         };
+
         res.redirect("/Homee");
     } catch (err) {
         console.log(err);
         res.render("Login", { error: "Something went wrong" });
     }
 });
-
 // HOME PAGE
 app.get("/Homee", async function(req, res) {
     if (!req.session.user) {
