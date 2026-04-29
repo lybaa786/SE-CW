@@ -4,10 +4,14 @@ block content
   .profile-page
     .profile-card
       .pro-image
-      h2= user.username
-      p= user.Email
+      h2= user.name
+      p= (user.email || user.Email)
+
+      if user.bio 
+        p.bio= user.bio 
+      else 
+        p.bio-muted No bio yet ✨
       .profile-actions
-        a.btn(href="/Browse-Playlist") Browse Playlists
-        a.btn(href="/create-playlist") Create Playlist
+        a.btn(href="/edit-profile") Edit Profile
         a.btn.btn-danger(href=`/delete-account?email=${user.Email}` onclick="return confirm('Are you sure you want to delete your account?')") Delete Account
         a.btn(href="/logout") Logout
