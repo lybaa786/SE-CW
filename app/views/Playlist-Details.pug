@@ -47,7 +47,7 @@ block content
               | ❤️ Like
               span.count= pl.stats.likesCount
 
-          a.action-btn(href=`/ratings?userId=${pl.ownerId}&playlistId=${pl.id}`) ⭐ Rate
+          a.action-btn(href="#drop-vibe") ⭐ Rate
 
           a.action-btn.comment-jump(href="#comment-form")
             | 💬 Comment
@@ -122,7 +122,7 @@ block content
             button.primary-btn(type="submit") Post comment
 
       .detail-section
-        h2.section-title Drop a Vibe ♡
+        h2.section-title#drop-vibe Drop a Vibe ♡
         p.empty-copy Rate this playlist with your mood
 
         form(action=`/rate/${pl.ownerId}` method='POST')
