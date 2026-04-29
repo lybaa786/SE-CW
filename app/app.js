@@ -280,13 +280,8 @@ app.get("/playlists/:id/delete", async function(req, res) {
 
 // LOGIN
 app.get("/Login", function(req, res) {
-<<<<<<< HEAD
-    if (req.session.user) return res.redirect("/Homee");
-    res.render("Login", { error: null });
-=======
     if (req.session.user) return res.redirect("/Browse-Playlist");
     res.render("Login", { error: req.query.msg || null });
->>>>>>> features
 });
 
 app.post("/login", async function(req, res) {
