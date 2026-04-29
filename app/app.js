@@ -249,7 +249,7 @@ app.get("/playlists/:id/delete", async function(req, res) {
 
 // LOGIN
 app.get("/Login", function(req, res) {
-    if (req.session.user) return res.redirect("/Browse-Playlist");
+    if (req.session.user) return res.redirect("/Homee");
     res.render("Login", { error: null });
 });
 
