@@ -59,7 +59,7 @@ block content
               | 💾 Save
               span.count= pl.stats.savesCount
 
-      if currentUser && pl.ownerName && currentUser.username == pl.ownerName
+      if currentUser
         .detail-section
           h2.section-title Add a Song
           form.comment-form(action=`/playlists/${pl.id}/add-song` method='POST')
