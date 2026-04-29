@@ -125,12 +125,12 @@ app.get("/playlists/:id", async function(req, res) {
 });
 
 // LIKE / UNLIKE
-app.post("/playlists/:id/like", async function(req, res) {
+app.post("/playlists/:id/like", requireLogin, async function(req, res) {
     try {
         if (req.body.action === "unlike") {
-            await Playlist.unlike(req.params.id, getCurrentUserId(req));
+            await Playlist.unlike(req.params.id, req.session.user.id);
         } else {
-            await Playlist.like(req.params.id, getCurrentUserId(req));
+            await Playlist.like(req.params.id, req.session.user.id);
         }
         res.redirect(`/playlists/${req.params.id}`);
     } catch (err) {
@@ -140,12 +140,12 @@ app.post("/playlists/:id/like", async function(req, res) {
 });
 
 // SAVE / UNSAVE
-app.post("/playlists/:id/save", async function(req, res) {
+app.post("/playlists/:id/save", requireLogin, async function(req, res) {
     try {
         if (req.body.action === "unsave") {
-            await Playlist.unsave(req.params.id, getCurrentUserId(req));
+            await Playlist.unsave(req.params.id, req.session.user.id);
         } else {
-            await Playlist.save(req.params.id, getCurrentUserId(req));
+            await Playlist.save(req.params.id, req.session.user.id);
         }
         res.redirect(`/playlists/${req.params.id}`);
     } catch (err) {
@@ -154,14 +154,17 @@ app.post("/playlists/:id/save", async function(req, res) {
     }
 });
 
+
 // RATE PLAYLIST
-app.post("/playlists/:id/rate", async function(req, res) {
+app.post("/playlists/:id/rate", requireLogin, async function(req, res) {
     try {
         const score = Number(req.body.score);
+
         if (!Number.isInteger(score) || score < 1 || score > 5) {
             return res.redirect(`/playlists/${req.params.id}?msg=Choose%20a%20rating%20from%201%20to%205`);
         }
-        await Playlist.rate(req.params.id, getCurrentUserId(req), score);
+
+        await Playlist.rate(req.params.id, req.session.user.id, score);
         res.redirect(`/playlists/${req.params.id}`);
     } catch (err) {
         console.log(err);
@@ -170,13 +173,15 @@ app.post("/playlists/:id/rate", async function(req, res) {
 });
 
 // COMMENT
-app.post("/playlists/:id/comment", async function(req, res) {
+app.post("/playlists/:id/comment", requireLogin, async function(req, res) {
     try {
         const comment = (req.body.comment || "").trim();
+
         if (!comment) {
             return res.redirect(`/playlists/${req.params.id}?msg=Comment%20cannot%20be%20empty`);
         }
-        await Playlist.addComment(req.params.id, getCurrentUserId(req), comment);
+
+        await Playlist.addComment(req.params.id, req.session.user.id, comment);
         res.redirect(`/playlists/${req.params.id}#comments`);
     } catch (err) {
         console.log(err);
@@ -185,9 +190,13 @@ app.post("/playlists/:id/comment", async function(req, res) {
 });
 
 // REPORT
-app.post("/playlists/:id/report", async function(req, res) {
+app.post("/playlists/:id/report", requireLogin, async function(req, res) {
     try {
-        await Playlist.report(req.params.id, getCurrentUserId(req), req.body.reason || "Inappropriate playlist");
+        await Playlist.report(
+            req.params.id,
+            req.session.user.id,
+            req.body.reason || "Inappropriate playlist"
+        );
         res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
     } catch (err) {
         console.log(err);
@@ -272,7 +281,7 @@ app.get("/playlists/:id/delete", async function(req, res) {
 // LOGIN
 app.get("/Login", function(req, res) {
     if (req.session.user) return res.redirect("/Browse-Playlist");
-    res.render("Login", { error: null });
+    res.render("Login", { error: req.query.msg || null });
 });
 
 app.post("/login", async function(req, res) {
