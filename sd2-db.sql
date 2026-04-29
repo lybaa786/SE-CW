@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Apr 28, 2026 at 11:21 PM
+-- Generation Time: Apr 29, 2026 at 02:30 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.3.26
 
@@ -421,19 +421,23 @@ CREATE TABLE `users` (
   `password` varchar(100) DEFAULT NULL,
   `bio` text,
   `profile_pic` varchar(255) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `account_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `bio`, `profile_pic`, `created_at`) VALUES
-(1, 'Lyba Ahmad', 'lybaaaa@gmail.com', 'lylyba123', 'LL Vibes', 'lyba.jpg', '2026-03-24 21:29:04'),
-(2, 'Rania Em', 'raniam@gmail.com', 'rania_123', 'Music and Vibes', 'rania.jpg', '2026-03-24 21:29:04'),
-(3, 'Tobi Francis', 'tobias@ymail.com', 'tobiasss23', 'Music is life', 'tobi.jpg', '2026-03-24 21:29:04'),
-(4, 'Malieka Morris', 'mallym@hotmail.com', 'maliekam89', 'Lover of R&B', 'malieka.jpg', '2026-03-24 21:29:04'),
-(5, 'Darren Smith', 'dsmith@hotmail.com', 'smithfan123', 'Loves Reggae and Afrobeats', 'darren.jpg', '2026-03-24 21:29:04');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `bio`, `profile_pic`, `created_at`, `account_id`) VALUES
+(1, 'Lyba Ahmad', 'lybaaaa@gmail.com', 'lylyba123', 'LL Vibes', 'lyba.jpg', '2026-03-24 21:29:04', NULL),
+(2, 'Rania Em', 'raniam@gmail.com', 'rania_123', 'Music and Vibes', 'rania.jpg', '2026-03-24 21:29:04', NULL),
+(3, 'Tobi Francis', 'tobias@ymail.com', 'tobiasss23', 'Music is life', 'tobi.jpg', '2026-03-24 21:29:04', NULL),
+(4, 'Malieka Morris', 'mallym@hotmail.com', 'maliekam89', 'Lover of R&B', 'malieka.jpg', '2026-03-24 21:29:04', NULL),
+(5, 'Darren Smith', 'dsmith@hotmail.com', 'smithfan123', 'Loves Reggae and Afrobeats', 'darren.jpg', '2026-03-24 21:29:04', NULL),
+(6, 'dabielm10', 'obafemitobi07@gmail.com', '', '', NULL, '2026-04-29 14:12:40', 1),
+(7, 'rani', 'rania@gmail.com', '', '', NULL, '2026-04-29 14:12:40', 2),
+(8, 'RANIA', 'lybarania@gmail.com', '', '', NULL, '2026-04-29 14:12:40', 3);
 
 --
 -- Indexes for dumped tables
@@ -444,7 +448,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `bio`, `profile_pic`, `c
 --
 ALTER TABLE `Account`
   ADD PRIMARY KEY (`AccountID`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `uniq_account_email` (`Email`);
 
 --
 -- Indexes for table `exchange_requests`
@@ -542,7 +547,9 @@ ALTER TABLE `tags`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_users_account_id` (`account_id`),
+  ADD UNIQUE KEY `uniq_users_email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -612,7 +619,7 @@ ALTER TABLE `tags`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
@@ -693,6 +700,12 @@ ALTER TABLE `ratings`
 --
 ALTER TABLE `songs`
   ADD CONSTRAINT `songs_ibfk_1` FOREIGN KEY (`playlist_id`) REFERENCES `playlist` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_users_account` FOREIGN KEY (`account_id`) REFERENCES `Account` (`AccountID`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

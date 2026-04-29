@@ -263,6 +263,40 @@ app.post("/login", async function(req, res) {
         res.render("Login", { error: "Something went wrong" });
     }
 });
+<<<<<<< Updated upstream
+=======
+// HOME PAGE
+app.get("/Homee", async function(req, res) {
+    if (!req.session.user) {
+        return res.redirect("/Homee");
+    }
+
+    const userId = req.session.user.id;
+
+    try {
+        const myPlaylists = await db.query(
+            "SELECT * FROM playlist WHERE user_id = ? ORDER BY id DESC",
+            [userId]
+        );
+
+        const recommendedPlaylists = await db.query(
+            "SELECT * FROM playlist WHERE user_id != ? ORDER BY RAND() LIMIT 6",
+            [userId]
+        );
+
+        res.render("Homee", {
+            user: req.session.user,
+            myPlaylists: myPlaylists,
+            recommendedPlaylists: recommendedPlaylists
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.send("Error loading home page");
+    }
+});
+
+>>>>>>> Stashed changes
 
 // LOGOUT
 app.get("/logout", function(req, res) {
@@ -425,7 +459,16 @@ app.get('/ratings', async function(req, res) {
 
 
 
+<<<<<<< Updated upstream
 app.get("/music-search", async (req, res) => {
+=======
+// MUSIC SEARCH
+
+console.log("URL:", url);
+console.log("Data:", data);
+
+app.get("/music-search", async function(req, res) {
+>>>>>>> Stashed changes
   const searchTerm = req.query.q || "";
 
   let songs = [];
@@ -442,6 +485,23 @@ app.get("/music-search", async (req, res) => {
   res.render("music-search", {
     songs,
     searchTerm
+  });
+});
+
+app.get("/concert-alerts", async function(req, res) {
+  const apiKey = process.env.TICKETMASTER_API_KEY;
+
+  const url =
+    `https://app.ticketmaster.com/discovery/v2/events.json?` +
+    `apikey=${apiKey}&keyword=music&city=London&countryCode=GB&size=10`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  const events = data._embedded ? data._embedded.events : [];
+
+  res.render("concert-alerts", {
+    events
   });
 });
 
