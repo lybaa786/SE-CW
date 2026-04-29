@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    .profile-page
+        .profile-card
+            h2 Edit Profile
+            p Update your profile details ✨
+
+            form.edit-form(action="/edit-profile" method="POST")
+                label(for="username") Username
+                input(type="text" name="username" value=user.username required)
+
+                label(for="email") Email
+                input(type="email" name="email" value=user.email required)
+                
+                label(for="bio") Bio
+                textarea(name="bio" placeholder="Tell us about yourself...")= user.bio
+                button(type="submit") Save Changes
+
+            a.back-link(href=`/profile/${user.username}`) Back to profile

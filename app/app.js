@@ -350,7 +350,7 @@ app.get("/delete-account", async function(req, res) {
 app.get("/profile/:username", async function(req, res) {
     try {
         const rows = await db.query(
-            "SELECT * FROM Account WHERE Username = ?",
+            "SELECT * FROM users WHERE name = ?",
             [req.params.username]
         );
         if (!rows || rows.length === 0) return res.send("User not found");
@@ -359,6 +359,48 @@ app.get("/profile/:username", async function(req, res) {
         console.error(error);
         res.status(500).send("Server error");
     }
+});
+
+// EDIT PROFILE
+app.get("/edit-profile", requireLogin, async (req, res) => {
+    try {
+        const rows = await db.query(
+            "SELECT * FROM users WHERE id = ?",
+            [req.session.user.id]
+        );
+    
+        res.render("Edit-Profile", {
+            user: rows[0]
+        });
+    } catch (err) {
+        console.log(err);
+        res.send("Error loading edit profile page ")
+    }
+
+});
+
+app.post("/edit-profile", requireLogin, async function(req, res) {
+    const { username, email, bio } = req.body;
+    
+    try {
+        await db.query(
+            "UPDATE users SET name = ?, email = ?, bio = ? WHERE id = ?",
+            [username, email, bio, req.session.user.id]
+        );
+
+        req.session.user.username = username;
+        req.session.user.email = email;
+        req.session.user.bio = bio;
+
+        res.redirect(`/profile/${username}`);
+    } catch (err) {
+        console.log(err);
+        res.render("Edit-Profile", {
+            user: req.session.user,
+            error: "Could not update profile"
+        });
+    }
+    
 });
 
 // VIBE RATINGS
