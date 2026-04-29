@@ -216,6 +216,22 @@ app.post("/playlists/:id/update", async function(req, res) {
     }
 });
 
+
+// ADD SONG TO PLAYLIST
+app.post("/playlists/:id/add-song", async function(req, res) {
+    try {
+        const { title, artist, album, genre, duration_secs, spotify_url } = req.body;
+        if (!title) return res.redirect(`/playlists/${req.params.id}?msg=Song title is required`);
+        await Playlist.addSong(
+            req.params.id, title, artist, album, genre, duration_secs, spotify_url
+        );
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error adding song: " + err.message);
+    }
+});
+
 // DELETE PLAYLIST
 app.get("/playlists/:id/delete", async function(req, res) {
     try {
