@@ -270,21 +270,44 @@ app.get("/Login", function(req, res) {
 app.post("/login", async function(req, res) {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.render("Login", { error: "All fields are required" });
         }
-        const rows = await db.query("SELECT * FROM Account WHERE Email = ?", [email]);
+
+        const rows = await db.query(
+            `
+            SELECT 
+                Account.AccountID,
+                Account.Username,
+                Account.Email,
+                Account.PasswordHash,
+                users.id AS userId,
+                users.name AS name
+            FROM Account
+            LEFT JOIN users 
+                ON users.email = Account.Email
+            WHERE Account.Email = ?
+            LIMIT 1
+            `,
+            [email]
+        );
+
         if (!rows || rows.length === 0) {
             return res.render("Login", { error: "User not found" });
         }
+
         const user = rows[0];
         const match = await bcrypt.compare(password, user.PasswordHash);
+
         if (!match) {
             return res.render("Login", { error: "Incorrect password" });
         }
+
         req.session.user = {
-            id: user.AccountID,
-            username: user.username,
+            id: user.userId || user.AccountID,
+            accountId: user.AccountID,
+            username: user.name || user.Username,
             email: user.Email
         };
         res.redirect("/Homee");
@@ -354,10 +377,18 @@ app.post("/create-account", async function(req, res) {
             return res.render("Create-Account", { error: "Username or email already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+
         await db.query(
             "INSERT INTO Account (Username, Email, PasswordHash) VALUES (?, ?, ?)",
             [username, email, hashedPassword]
         );
+
+        await db.query(
+            "INSERT INTO users (name, email) VALUES (?, ?)",
+            [username, email]
+        );
+
+        res.redirect("/Login");
         res.redirect("/Login");
     } catch (err) {
         console.log(err);
