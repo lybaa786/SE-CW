@@ -230,7 +230,7 @@ app.get("/playlists/:id/delete", async function(req, res) {
 
 // LOGIN
 app.get("/Login", function(req, res) {
-    if (req.session.user) return res.redirect("/Browse-Playlist");
+    if (req.session.user) return res.redirect("/Homee");
     res.render("Login", { error: null });
 });
 
@@ -250,9 +250,9 @@ app.post("/login", async function(req, res) {
             return res.render("Login", { error: "Incorrect password" });
         }
         req.session.user = {
-            id: user.AccountID,
-            username: user.username,
-            email: user.Email
+            id: user.AccountID || user.id,
+            username: user.username || user.Username,
+            email: user.Email || user.email
         };
         res.redirect("/Homee");
     } catch (err) {
@@ -267,21 +267,23 @@ app.get("/Homee", async function(req, res) {
         return res.redirect("/login");
     }
 
+    const userId = req.session.user.id;
+
     try {
-        const playlists = await db.query(`
-            SELECT
-                p.id,
-                p.title,
-                p.description,
-                p.genre,
-                p.user_id
-            FROM playlist p
-            ORDER BY p.id DESC
-`       );
+        const myPlaylists = await db.query(
+            "SELECT * FROM playlist WHERE user_id = ? ORDER BY id DESC",
+            [userId]
+        );
+
+        const recommendedPlaylists = await db.query(
+            "SELECT * FROM playlist WHERE user_id != ? ORDER BY RAND() LIMIT 6",
+            [userId]
+        );
 
         res.render("Homee", {
             user: req.session.user,
-            playlists: playlists
+            myPlaylists: myPlaylists,
+            recommendedPlaylists: recommendedPlaylists
         });
 
     } catch (err) {

@@ -87,7 +87,15 @@ block content
                         span= song.genre
                 .track-actions
                   if song.spotify_url
-                    a.track-link(href=song.spotify_url target="_blank" rel="noopener noreferrer") [Spotify Link]
+                    - const trackId = song.spotify_url.split('/track/')[1]?.split('?')[0]
+                    if trackId 
+                      iframe(
+                        src=`https://open.spotify.com/embed/track/${trackId}`
+                        width="100%"
+                        height="152%"
+                        frameborder="0%"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      )
         else
           p.empty-copy No songs in this playlist yet.
 

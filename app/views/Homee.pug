@@ -1,29 +1,28 @@
 extends layout
 
 block content
-  main.home-feed-page
-    .home-topbar
-      h1 Playlist Feed
-      input(type="text", placeholder="Search playlists...")
+  main.home-page
+    h1 Welcome back, #{user.username} 👋
+    p Here are your playlists and recommendations.
 
-    .welcome-box
-      h2 Welcome back, #{user.username} 👋
-      p Discover playlists, save your favourites, and join the vibe.
-
-    .playlist-feed
-      each playlist in playlists
-        .feed-card
-          h3 #{playlist.title}
-          p.tags
-            span [#{playlist.genre}]
+    section
+      h2 Your Playlists
+      if myPlaylists.length
+        each playlist in myPlaylists
+          .playlist-card
+          h3= playlist.title
           p= playlist.description
+          p= playlist.genre
+      else
+        p You have not created any playlists yet.
 
-          .feed-actions
-            span ⭐ 4.5
-            span 💬 0 comments
-            button(type="button") 💾 Save
-
-    if !playlists || playlists.length === 0
-      .empty-feed
-        h3 No playlists yet
-        p Create the first playlist!
+    section
+      h2 Recommended For You
+      if recommendedPlaylists.length
+        each playlist in recommendedPlaylists
+          .playlist-card
+          h3= playlist.title
+          p= playlist.description
+          p= playlist.genre
+      else
+        p No recommendations yet.

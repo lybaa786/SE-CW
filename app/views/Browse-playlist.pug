@@ -44,6 +44,8 @@ html(lang="en")
         font-size: 1.5rem;
         font-weight: bold;
         letter-spacing: 0.5px;
+        color: #1f1f1f;
+        text-decoration: none;
       }
 
       .topbar-right {
@@ -245,10 +247,29 @@ html(lang="en")
         }
       }
 
+      .profile-btn {
+        background: none;
+        text-decoration: none;
+        padding: 0;
+        color: #1f1f1f !important;
+        border-radius: 0;
+        font-weight: 500;
+      }
+
+      .profile-btn:hover {
+        text-decoration: underline;
+      }
+
   body
     .topbar
-      .brand PlaylistExchange
+      a.brand.brand-btn(href="/Homee") PlaylistExchange
+
       .topbar-right
+        if currentUser 
+          a.profile-btn(href=`/profile/${currentUser.username}`) #{currentUser.username}
+        else 
+          a.profile-btn(href="/login") Profile 
+
         form.search-form(action="/Browse-Playlist" method="GET")
           input.search-input(
             type="text"
