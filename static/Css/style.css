@@ -543,6 +543,7 @@ background: #fee2e2;
 color: #b91c1c !important;
 padding: 10px;
 border-radius: 8px;
+}
 /* RESPONSIVE NAV */
 @media (max-width: 768px) {
   .nav-inner {
@@ -563,7 +564,7 @@ border-radius: 8px;
   .welcome-page .container {
     width: auto;
   }
-}}
+}
 
 .home-feed-page {
   min-height: 100vh;
