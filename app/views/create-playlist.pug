@@ -5,6 +5,67 @@ html(lang="en")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     title Create Playlist — PlaylistExchange
     link(rel="stylesheet", href="/Css/style.css")
+    style.
+      :root {
+        --sage: #b7d3b0;
+        --sage-dark: #90b08b;
+        --text: #2f3a2f;
+        --muted: #6b756b;
+        --border: #d7e4d2;
+      }
+      .song-entry {
+        background: #f4f8f2;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        position: relative;
+      }
+      .song-entry-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .song-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .song-fields .full-width { grid-column: 1 / -1; }
+      .remove-song {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #FCEBEB;
+        color: #A32D2D;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .add-song-btn {
+        background: white;
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--sage-dark);
+        cursor: pointer;
+        transition: all 0.15s;
+        margin-bottom: 20px;
+      }
+      .add-song-btn:hover {
+        border-color: var(--sage-dark);
+        background: #f4f8f2;
+      }
+      #songs-container { margin-top: 8px; }
 
   body
     .topbar
@@ -38,7 +99,7 @@ html(lang="en")
             textarea.form-textarea(
               id="description"
               name="description"
-              placeholder="What's the vibe of this playlist? Describe the mood, genre, or occasion..."
+              placeholder="What's the vibe of this playlist?"
               required
             )
 
@@ -49,4 +110,46 @@ html(lang="en")
                 input.genre-option(type='radio' name='genre' id=`genre-${genre}` value=genre)
                 label.genre-btn(for=`genre-${genre}`)= genre
 
+          .form-group
+            label.form-label Songs
+            p(style="font-size:0.88rem;color:var(--muted);margin-bottom:12px") Add songs to your playlist (optional — you can add more later)
+
+            #songs-container
+
+            button.add-song-btn(type="button" onclick="addSong()") + Add a Song
+
           button.submit-btn(type="submit") Start the vibe!
+
+    script.
+      let songCount = 0;
+
+      function addSong() {
+        songCount++;
+        const container = document.getElementById('songs-container');
+        const div = document.createElement('div');
+        div.className = 'song-entry';
+        div.id = `song-${songCount}`;
+        div.innerHTML = `
+          <div class="song-entry-title">Song ${songCount}</div>
+          <button class="remove-song" type="button" onclick="removeSong(${songCount})">✕ Remove</button>
+          <div class="song-fields">
+            <div class="full-width">
+              <input class="form-input" type="text" name="song_title[]" placeholder="Song title *" required />
+            </div>
+            <input class="form-input" type="text" name="song_artist[]" placeholder="Artist" />
+            <input class="form-input" type="text" name="song_album[]" placeholder="Album" />
+            <input class="form-input" type="text" name="song_genre[]" placeholder="Genre e.g. R&B" />
+            <input class="form-input" type="number" name="song_duration[]" placeholder="Duration (secs)" />
+            <input class="form-input" type="text" name="song_spotify[]" placeholder="Spotify URL" />
+          </div>
+        `;
+        container.appendChild(div);
+      }
+
+      function removeSong(id) {
+        const el = document.getElementById(`song-${id}`);
+        if (el) el.remove();
+      }
+
+      // Add one song field by default
+      addSong();
