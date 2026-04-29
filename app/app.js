@@ -515,23 +515,28 @@ app.get('/ratings', async function(req, res) {
 
 
 
-app.get("/music-search", async (req, res) => {
+// MUSIC SEARCH
+app.get("/music-search", async function(req, res) {
   const searchTerm = req.query.q || "";
-
   let songs = [];
 
   if (searchTerm) {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=music&limit=12`;
+    try {
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=music&limit=12`;
 
-    const response = await fetch(url);
-    const data = await response.json();
+      const response = await fetch(url);
+      const data = await response.json();
 
-    songs = data.results;
+      songs = data.results || [];
+    } catch (error) {
+      console.error("Music API error:", error);
+      songs = [];
+    }
   }
 
   res.render("music-search", {
-    songs,
-    searchTerm
+    songs: songs,
+    searchTerm: searchTerm
   });
 });
 

@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  main.music-search-page
+    h1 Music Search
+
+    form(method="GET", action="/music-search")
+      input(type="text", name="q", placeholder="Search for songs or artists", value=searchTerm)
+      button(type="submit") Search
+
+    if searchTerm
+      h2 Results for "#{searchTerm}"
+
+    if songs && songs.length > 0
+      .song-results
+        each song in songs
+          .song-card
+            if song.artworkUrl100
+              img(src=song.artworkUrl100, alt=song.trackName)
+
+            h3= song.trackName
+            p Artist: #{song.artistName}
+            p Album: #{song.collectionName}
+
+            if song.previewUrl
+              audio(controls)
+                source(src=song.previewUrl, type="audio/mpeg")
+              p
+                a(href=song.trackViewUrl, target="_blank") Open on Apple Music
+
+    else if searchTerm
+      p No songs found.
+
+    else
+      p Search for a song, artist, or album above.
