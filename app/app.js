@@ -362,15 +362,95 @@ app.get("/delete-account", async function(req, res) {
     }
 });
 
+app.post("/follow/:id", requireLogin, async function(req, res) {
+    try {
+        const followerId = req.session.user.id;
+        const followingId = req.params.id;
+
+        if (Number(followerId) === Number(followingId)) {
+            return res.redirect("back");
+    }
+
+        await db.query(
+            "INSERT IGNORE INTO follows (follower_id, following_id) VALUES (?, ?)",
+            [followerId, followingId]
+    );
+
+        res.redirect("back");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error following user");
+    }
+});
+
+app.post("/unfollow/:id", requireLogin, async function(req, res) {
+    try {
+        await db.query(
+            "DELETE FROM follows WHERE follower_id = ? AND following_id = ?",
+            [req.session.user.id, req.params.id]
+        );
+
+        res.redirect("back");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error unfollowing user");
+    }
+});
+
 // PROFILE
 app.get("/profile/:username", async function(req, res) {
     try {
+        // 1. Get user
         const rows = await db.query(
             "SELECT * FROM users WHERE name = ?",
             [req.params.username]
         );
-        if (!rows || rows.length === 0) return res.send("User not found");
-        res.render("Profile-Page", { user: rows[0] });
+
+        if (!rows || rows.length === 0) {
+            return res.send("User not found");
+        }
+
+        const profileUser = rows[0]; // ✅ YOU WERE MISSING THIS
+
+        // 2. Get playlists
+        const userPlaylists = await db.query(
+            "SELECT * FROM playlist WHERE user_id = ?",
+            [profileUser.id]
+        );
+
+        const followerRows = await db.query(
+            "SELECT COUNT(*) AS count FROM follows WHERE following_id = ?",
+            [profileUser.id]
+        );
+
+        const followingRows = await db.query(
+            "SELECT COUNT(*) AS count FROM follows WHERE following_id = ?",
+            [profileUser.id]
+        );
+
+        let isFollowing = false;
+
+        if (req.session.user && req.session.user.id !== profileUser.id) {
+            const followRows = await db.query(
+                "SELECT * FROM follows WHERE follower_id = ? AND following_id = ?",
+                [req.session.user.id, profileUser.id]
+            );
+
+            isFollowing = followRows.length > 0;
+        }
+
+        
+
+        // 3. Render page
+        res.render("Profile-Page", {
+            user: profileUser,
+            currentUser: req.session.user,
+            userPlaylists,
+            followerCount: followerRows[0].count,
+            followingCount: followingRows[0].count,
+            isFollowing
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).send("Server error");
