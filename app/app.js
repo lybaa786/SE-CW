@@ -267,7 +267,7 @@ app.post("/login", async function(req, res) {
 // HOME PAGE
 app.get("/Homee", async function(req, res) {
     if (!req.session.user) {
-        return res.redirect("/Homee");
+        return res.redirect("/Login");
     }
 
     const userId = req.session.user.id;
