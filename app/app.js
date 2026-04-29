@@ -254,12 +254,42 @@ app.post("/login", async function(req, res) {
             username: user.username,
             email: user.Email
         };
-        res.redirect("/Browse-Playlist");
+        res.redirect("/Homee");
     } catch (err) {
         console.log(err);
         res.render("Login", { error: "Something went wrong" });
     }
 });
+
+// HOME PAGE
+app.get("/Homee", async function(req, res) {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+
+    try {
+        const playlists = await db.query(`
+            SELECT
+                p.id,
+                p.title,
+                p.description,
+                p.genre,
+                p.user_id
+            FROM playlist p
+            ORDER BY p.id DESC
+`       );
+
+        res.render("Homee", {
+            user: req.session.user,
+            playlists: playlists
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.send("Error loading home page");
+    }
+});
+
 
 // LOGOUT
 app.get("/logout", function(req, res) {

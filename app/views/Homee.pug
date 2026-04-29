@@ -1,14 +1,29 @@
 extends layout
 
 block content
-  .homee-page
-    .container
-      if currentUser
-        h1 Welcome back, #{currentUser.username}! 🎵
-      else
-        h1 Welcome to PlaylistExchange!
-      p.subtitle Find your vibe, set your mood and share it all!
-      .home-actions
-        a.btn-primary(href="/Browse-Playlist") Browse Playlists
-        a.btn-secondary(href="/create-playlist") + Create Playlist
-        a.btn-secondary(href="/ratings") View Vibes
+  main.home-feed-page
+    .home-topbar
+      h1 Playlist Feed
+      input(type="text", placeholder="Search playlists...")
+
+    .welcome-box
+      h2 Welcome back, #{user.username} 👋
+      p Discover playlists, save your favourites, and join the vibe.
+
+    .playlist-feed
+      each playlist in playlists
+        .feed-card
+          h3 #{playlist.title}
+          p.tags
+            span [#{playlist.genre}]
+          p= playlist.description
+
+          .feed-actions
+            span ⭐ 4.5
+            span 💬 0 comments
+            button(type="button") 💾 Save
+
+    if !playlists || playlists.length === 0
+      .empty-feed
+        h3 No playlists yet
+        p Create the first playlist!

@@ -564,3 +564,75 @@ border-radius: 8px;
     width: auto;
   }
 }}
+
+.home-feed-page {
+  min-height: 100vh;
+  background: #f4faf2;
+  padding: 40px 80px;
+}
+
+.home-topbar {
+  background: #bfd3b6;
+  padding: 18px 24px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-topbar input {
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: 1px solid #d7e2d2;
+}
+
+.welcome-box,
+.feed-card,
+.empty-feed {
+  background: white;
+  border: 1px solid #dfe8dc;
+  border-radius: 18px;
+  padding: 24px;
+  margin: 24px auto;
+  max-width: 900px;
+  box-shadow: 0 8px 22px rgba(70, 90, 60, 0.08);
+}
+
+.playlist-feed {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.feed-card h3 {
+  margin-top: 0;
+  color: #2f3a2f;
+}
+
+.tags span {
+  margin-right: 12px;
+  color: #5f715d;
+  font-weight: 600;
+}
+
+.spotify-link {
+  display: inline-block;
+  margin: 10px 0;
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.feed-actions {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.feed-actions button {
+  border: none;
+  background: #9caf8f;
+  color: white;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+}
