@@ -200,22 +200,36 @@ app.post("/create-playlist", async function(req, res) {
             getCurrentUserId(req),
             req.body.genre || null
         );
+
+        // Save songs if provided
+        const titles = req.body.song_title;
+        if (titles) {
+            const songTitles = Array.isArray(titles) ? titles : [titles];
+            const artists = [].concat(req.body.song_artist || []);
+            const albums = [].concat(req.body.song_album || []);
+            const genres = [].concat(req.body.song_genre || []);
+            const durations = [].concat(req.body.song_duration || []);
+            const spotifyUrls = [].concat(req.body.song_spotify || []);
+
+            for (let i = 0; i < songTitles.length; i++) {
+                if (songTitles[i] && songTitles[i].trim()) {
+                    await Playlist.addSong(
+                        playlist.id,
+                        songTitles[i].trim(),
+                        artists[i] || null,
+                        albums[i] || null,
+                        genres[i] || null,
+                        durations[i] || null,
+                        spotifyUrls[i] || null
+                    );
+                }
+            }
+        }
+
         res.redirect(`/playlists/${playlist.id}`);
     } catch (err) {
         console.log(err);
         res.send("Error creating playlist");
-    }
-});
-
-// UPDATE PLAYLIST
-app.post("/playlists/:id/update", async function(req, res) {
-    try {
-        const pl = new Playlist(req.params.id);
-        await pl.updatePlaylistName(req.body.title, req.body.description);
-        res.redirect(`/playlists/${req.params.id}`);
-    } catch (err) {
-        console.log(err);
-        res.send("Error updating playlist");
     }
 });
 
