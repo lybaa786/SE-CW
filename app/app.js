@@ -312,7 +312,7 @@ app.get("/Homee", async function(req, res) {
 // LOGOUT
 app.get("/logout", function(req, res) {
     req.session.destroy();
-    res.redirect("/");
+    res.redirect("/welcome");
 });
 
 // CREATE ACCOUNT
