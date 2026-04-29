@@ -532,7 +532,7 @@ app.get("/concert-alerts", async function(req, res) {
 
   const events = data._embedded ? data._embedded.events : [];
 
-  res.render("concert-alerts", {
+  res.render("live-music-alert", {
     events
   });
 });
