@@ -273,7 +273,7 @@ app.post("/login", async function(req, res) {
             username: user.username,
             email: user.Email
         };
-        res.redirect("/Browse-Playlist");
+        res.redirect("/Homee");
     } catch (err) {
         console.log(err);
         res.render("Login", { error: "Something went wrong" });
