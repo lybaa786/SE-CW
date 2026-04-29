@@ -59,11 +59,7 @@ block content
               | 💾 Save
               span.count= pl.stats.savesCount
 
-          form.inline-form(action=`/playlists/${pl.id}/report` method="POST")
-            input(type="hidden" name="reason" value="Reported from playlist detail page")
-            button.action-btn.report-btn(type="submit") 🚩 Report
-
-      if currentUser && pl.ownerId && currentUser.id == pl.ownerId
+      if currentUser && pl.ownerName && currentUser.username == pl.ownerName
         .detail-section
           h2.section-title Add a Song
           form.comment-form(action=`/playlists/${pl.id}/add-song` method='POST')

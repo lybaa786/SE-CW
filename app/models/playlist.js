@@ -237,6 +237,21 @@ class Playlist {
     );
   }
 
+  // adding songs to the playlist!
+  static async addSong(playlistId, title, artist, album, genre, duration_secs, spotify_url) {
+    const sql = `INSERT INTO songs (playlist_id, title, artist, album, genre, duration_secs, spotify_url)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    await db.query(sql, [
+        playlistId,
+        title,
+        artist || null,
+        album || null,
+        genre || null,
+        duration_secs || null,
+        spotify_url || null
+    ]);
+}
+  
   static async rate(playlistId, userId, score) {
     await db.query(
       `

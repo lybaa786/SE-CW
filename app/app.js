@@ -184,17 +184,6 @@ app.post("/playlists/:id/comment", async function(req, res) {
     }
 });
 
-// REPORT
-app.post("/playlists/:id/report", async function(req, res) {
-    try {
-        await Playlist.report(req.params.id, getCurrentUserId(req), req.body.reason || "Inappropriate playlist");
-        res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Error reporting playlist");
-    }
-});
-
 // CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
     res.render("create-playlist");
@@ -224,6 +213,22 @@ app.post("/playlists/:id/update", async function(req, res) {
     } catch (err) {
         console.log(err);
         res.send("Error updating playlist");
+    }
+});
+
+
+// ADD SONG TO PLAYLIST
+app.post("/playlists/:id/add-song", async function(req, res) {
+    try {
+        const { title, artist, album, genre, duration_secs, spotify_url } = req.body;
+        if (!title) return res.redirect(`/playlists/${req.params.id}?msg=Song title is required`);
+        await Playlist.addSong(
+            req.params.id, title, artist, album, genre, duration_secs, spotify_url
+        );
+        res.redirect(`/playlists/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error adding song: " + err.message);
     }
 });
 
