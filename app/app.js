@@ -184,17 +184,6 @@ app.post("/playlists/:id/comment", async function(req, res) {
     }
 });
 
-// REPORT
-app.post("/playlists/:id/report", async function(req, res) {
-    try {
-        await Playlist.report(req.params.id, getCurrentUserId(req), req.body.reason || "Inappropriate playlist");
-        res.redirect(`/playlists/${req.params.id}?msg=Playlist%20reported`);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Error reporting playlist");
-    }
-});
-
 // CREATE PLAYLIST
 app.get("/create-playlist", function(req, res) {
     res.render("create-playlist");
