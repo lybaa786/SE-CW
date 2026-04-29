@@ -31,6 +31,14 @@ function getCurrentUserId(req) {
     return req.session.user ? req.session.user.id : 1;
 }
 
+// REquire login function
+function requireLogin(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    next();
+}
+
 //root for about page
 
 app.get("/about-us", async function(req, res) {

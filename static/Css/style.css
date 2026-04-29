@@ -1008,6 +1008,9 @@ body {
 
 .back-link:hover {
   color: var(--text);
+
+}
+
 /* PROFILE PAGE */
 .profile-page {
   min-height: calc(100vh - 80px);
@@ -1143,4 +1146,4 @@ body {
   color: #6b756b;
   margin-bottom: 10px;
   font-size: 0.95rem;
-}}
+}
