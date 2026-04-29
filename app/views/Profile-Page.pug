@@ -5,13 +5,43 @@ block content
     .profile-card
       .pro-image
       h2= user.name
-      p= (user.email || user.Email)
+      p.profile-email= user.email
 
-      if user.bio 
-        p.bio= user.bio 
-      else 
+      if user.bio
+        p.bio= user.bio
+      else
         p.bio-muted No bio yet ✨
+
+      .profile-stats
+        span #{followerCount || 0} Followers
+        span #{followingCount || 0} Following
+
       .profile-actions
-        a.btn(href="/edit-profile") Edit Profile
-        a.btn.btn-danger(href=`/delete-account?email=${user.Email}` onclick="return confirm('Are you sure you want to delete your account?')") Delete Account
-        a.btn(href="/logout") Logout
+        if currentUser && currentUser.id === user.id
+          a.btn(href="/edit-profile") Edit Profile
+          a.btn.btn-danger(href=`/delete-account?email=${user.email}` onclick="return confirm('Are you sure?')") Delete Account
+          a.btn(href="/logout") Logout
+        else if currentUser
+          if isFollowing
+            form(action=`/unfollow/${user.id}` method="POST")
+              button.btn(type="submit") Unfollow
+          else
+            form(action=`/follow/${user.id}` method="POST")
+              button.btn(type="submit") Follow
+        else
+          a.btn(href="/Login") Login to follow
+
+      .profile-playlists
+          h2 #{user.name}'s Playlists
+
+          if userPlaylists && userPlaylists.length
+            .playlist-grid
+              each playlist in userPlaylists
+                .playlist-card
+                  h3= playlist.title
+                  p= playlist.description
+                  if playlist.genre
+                    span.genre-pill= playlist.genre
+                  a.btn(href=`/playlists/${playlist.id}`) View
+          else
+            p.bio-muted No playlists yet 🎧
