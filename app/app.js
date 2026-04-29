@@ -296,12 +296,7 @@ app.post("/login", async function(req, res) {
             username: user.name || user.Username,
             email: user.Email
         };
-<<<<<<< Updated upstream
         res.redirect("/Homee");
-=======
-
-        res.redirect("/Browse-Playlist");
->>>>>>> Stashed changes
     } catch (err) {
         console.log(err);
         res.render("Login", { error: "Something went wrong" });
