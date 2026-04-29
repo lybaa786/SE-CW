@@ -5,24 +5,26 @@ block content
     h1 Welcome back, #{user.username} 👋
     p Here are your playlists and recommendations.
 
-    section
+    section.home-section
       h2 Your Playlists
       if myPlaylists.length
-        each playlist in myPlaylists
-          .playlist-card
-          h3= playlist.title
-          p= playlist.description
-          p= playlist.genre
+        .playlist-grid
+          each playlist in myPlaylists
+            a.playlist-card(href=`/playlists/${playlist.id}`)
+              h3= playlist.title
+              p= playlist.description
+              span.genre-pill= playlist.genre
       else
         p You have not created any playlists yet.
 
-    section
+    section.home-section
       h2 Recommended For You
       if recommendedPlaylists.length
-        each playlist in recommendedPlaylists
-          .playlist-card
-          h3= playlist.title
-          p= playlist.description
-          p= playlist.genre
+        .playlist-grid
+          each playlist in recommendedPlaylists
+            a.playlist-card(href=`/playlists/${playlist.id}`)
+              h3= playlist.title
+              p= playlist.description
+              span.genre-pill= playlist.genre
       else
         p No recommendations yet.

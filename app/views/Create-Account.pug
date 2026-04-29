@@ -1,23 +1,23 @@
-extends layout
-
-block navbar 
-
+extends auth-layout
 
 
 block content
-  .page-center
-    .create-account-page
-      .cre-container
-        .cre-image
-        h2 Create New Account
+  .create-account-page
+    .cre-container
+      .cre-image
+      h2 Create New Account
+      p.cre-subtitle Join PlaylistExchange and start sharing your vibe.
         
-        if error 
-          p(style="color: red")= error 
+      if error 
+        p(style="color: red")= error 
           
-        form(action="/create-account" method= "POST") 
+      form(action="/create-account" method= "POST") 
         
-          input.animated-crea(type="text", name="username", placeholder="Username", required)
-          input.animated-crea(type="email", name="email" placeholder="Email", required)
-          input.animated-crea(type="password", name= "password" placeholder="Password", required)
-          input.animated-crea(type="password", name="confirmPassword", placeholder="Confirm Password", required)
-          button.animated-btn(type="submit") Create Account
+        input.animated-crea(type="text", name="username", placeholder="Username", required)
+        input.animated-crea(type="email", name="email" placeholder="Email", required)
+        input.animated-crea(type="password", name= "password" placeholder="Password", required)
+        input.animated-crea(type="password", name="confirmPassword", placeholder="Confirm Password", required)
+        button.animated-btn(type="submit") Create Account
+        p.auth-switch 
+          | Already have an account?
+          a(href="/login") Login
