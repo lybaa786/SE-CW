@@ -59,19 +59,6 @@ block content
               | 💾 Save
               span.count= pl.stats.savesCount
 
-      if currentUser
-        .detail-section
-          h2.section-title Add a Song
-          form.comment-form(action=`/playlists/${pl.id}/add-song` method='POST')
-            input.comment-input(type='text' name='title' placeholder='Song title *' required)
-            input.comment-input(type='text' name='artist' placeholder='Artist')
-            input.comment-input(type='text' name='album' placeholder='Album')
-            input.comment-input(type='text' name='genre' placeholder='Genre e.g. R&B, Pop')
-            input.comment-input(type='number' name='duration_secs' placeholder='Duration in seconds e.g. 209')
-            input.comment-input(type='text' name='spotify_url' placeholder='Spotify URL')
-            .comment-form-actions
-              button.primary-btn(type='submit') + Add Song
-
       .detail-section
         h2.section-title TrackList
 
