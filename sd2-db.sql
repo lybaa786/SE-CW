@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Apr 28, 2026 at 03:58 PM
+-- Generation Time: Apr 28, 2026 at 11:21 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.3.26
 
@@ -18,15 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `playlist_exchange`
---
-CREATE DATABASE IF NOT EXISTS `playlist_exchange` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `playlist_exchange`;
---
 -- Database: `sd2-db`
 --
-CREATE DATABASE IF NOT EXISTS `sd2-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `sd2-db`;
 
 -- --------------------------------------------------------
 
@@ -48,7 +41,8 @@ CREATE TABLE `Account` (
 
 INSERT INTO `Account` (`AccountID`, `username`, `Email`, `PasswordHash`, `CreatedAt`) VALUES
 (1, 'dabielm10', 'obafemitobi07@gmail.com', '$2b$10$0ZYXBkhTPS6sGc6QXI2q/.4fjOHnqxnc752GsKLc9.6fRNn3LjHjK', '2026-03-25 01:50:12'),
-(2, 'rani', 'rania@gmail.com', '$2b$10$cT6Pv8NER0/dNnyBXfaVK.2C9AgmgqWAKNWGgLMTY7Ms3.9odfbfm', '2026-04-28 15:58:05');
+(2, 'rani', 'rania@gmail.com', '$2b$10$cT6Pv8NER0/dNnyBXfaVK.2C9AgmgqWAKNWGgLMTY7Ms3.9odfbfm', '2026-04-28 15:58:05'),
+(3, 'RANIA', 'lybarania@gmail.com', '$2b$10$DbEP0agNuTkzHvPRgCiLG.U.B4zNhPtyp6tuaTEJTwPRuD.Zv.DmW', '2026-04-28 16:48:49');
 
 -- --------------------------------------------------------
 
@@ -124,7 +118,8 @@ INSERT INTO `playlist` (`id`, `title`, `description`, `created_at`, `user_id`, `
 (22, 'Chill Escape', 'Relaxing songs for stepping away from stress.', '2026-03-24 22:18:26', 5, 'Ambient'),
 (23, 'Study and Breathe', 'Soft music for studying without distractions.', '2026-03-24 22:18:26', 5, 'Ambient'),
 (24, 'Worship and Peace', 'Faith-based songs with peaceful, reflective tones.', '2026-03-24 22:18:26', 5, 'Worship'),
-(25, 'Energetic Weekend', 'Bright and lively tracks for fun weekend moments.', '2026-03-24 22:18:26', 5, 'Afrobeats');
+(25, 'Energetic Weekend', 'Bright and lively tracks for fun weekend moments.', '2026-03-24 22:18:26', 5, 'Afrobeats'),
+(26, 'partyyyy', 'dancing\r\nhype party music!!!', '2026-04-28 16:46:26', 1, 'Dance');
 
 -- --------------------------------------------------------
 
@@ -146,7 +141,12 @@ CREATE TABLE `playlist_comments` (
 
 INSERT INTO `playlist_comments` (`id`, `playlist_id`, `user_id`, `body`, `created_at`) VALUES
 (1, 13, 1, 'cool', '2026-04-24 21:35:19'),
-(2, 13, 1, 'funnn', '2026-04-24 22:36:09');
+(2, 13, 1, 'funnn', '2026-04-24 22:36:09'),
+(3, 13, 2, 'heyeyeyeyye', '2026-04-28 16:09:54'),
+(4, 26, 1, 'hey', '2026-04-28 16:46:40'),
+(5, 26, 2, 'heyyyyyy im rania', '2026-04-28 16:47:10'),
+(6, 26, 2, 'is this rania?', '2026-04-28 16:47:28'),
+(7, 26, 3, 'this is RANIA', '2026-04-28 16:49:14');
 
 -- --------------------------------------------------------
 
@@ -290,6 +290,15 @@ CREATE TABLE `ratings` (
   `comment` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `ratings`
+--
+
+INSERT INTO `ratings` (`id`, `rater_id`, `ratee_id`, `exchange_id`, `score`, `comment`, `created_at`) VALUES
+(1, 1, 1, 26, 3, '{\"vibe\":null,\"happy\":\"3\",\"situations\":[],\"comment\":\"FIRST RATING\",\"playlistId\":\"26\"}', '2026-04-28 23:16:59'),
+(3, 1, 5, 25, 3, '{\"vibe\":\"Gym energy\",\"happy\":\"4\",\"situations\":[\"Party\"],\"comment\":\"FIRST RATING\",\"playlistId\":\"25\"}', '2026-04-28 23:17:35'),
+(4, 1, 1, 1, 3, '{\"vibe\":null,\"happy\":\"3\",\"situations\":[],\"comment\":\"RATED ADDED\",\"playlistId\":null}', '2026-04-28 23:19:07');
 
 -- --------------------------------------------------------
 
@@ -543,7 +552,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `Account`
 --
 ALTER TABLE `Account`
-  MODIFY `AccountID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `AccountID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `exchange_requests`
@@ -561,13 +570,13 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `playlist`
 --
 ALTER TABLE `playlist`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `playlist_comments`
 --
 ALTER TABLE `playlist_comments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `playlist_ratings`
@@ -585,7 +594,7 @@ ALTER TABLE `playlist_reports`
 -- AUTO_INCREMENT for table `ratings`
 --
 ALTER TABLE `ratings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `songs`
@@ -677,8 +686,7 @@ ALTER TABLE `playlist_tags`
 --
 ALTER TABLE `ratings`
   ADD CONSTRAINT `rat_fk1` FOREIGN KEY (`rater_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `rat_fk2` FOREIGN KEY (`ratee_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `rat_fk3` FOREIGN KEY (`exchange_id`) REFERENCES `exchange_requests` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `rat_fk2` FOREIGN KEY (`ratee_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `songs`

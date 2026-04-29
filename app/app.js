@@ -5,6 +5,7 @@ const Account = require("./models/account");
 const fetch = require("node-fetch");
 
 var app = express();
+``
 app.use(session({
     secret: "playlistappsecret",
     resave: false,
@@ -31,11 +32,14 @@ function getCurrentUserId(req) {
     return req.session.user ? req.session.user.id : 1;
 }
 
-// HOME
-app.get("/", function(req, res) {
-    res.render("welcome");
+//root for about page
+
+app.get("/about-us", async function(req, res) {
+    res.render ("about-us");
+
 });
 
+// HOME
 app.get("/welcome", function(req, res) {
     res.render("welcome");
 });
@@ -374,22 +378,18 @@ app.post('/rate/:userId', async function(req, res) {
             playlistId: playlistId || null
         });
 
-        const raterId = req.session.user ? req.session.user.id : 1;
-        const rateeId = parseInt(req.params.userId) || 1;
-        const exchangeId = parseInt(playlistId) || 1;
-
         await db.query(
             `INSERT INTO ratings (rater_id, ratee_id, exchange_id, score, comment)
              VALUES (?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE score=VALUES(score), comment=VALUES(comment)`,
-            [raterId, rateeId, exchangeId, score || 3, fullComment]
+            [getCurrentUserId(req), req.params.userId, 1, score, fullComment]
         );
 
         if (playlistId) return res.redirect(`/playlists/${playlistId}`);
         res.redirect('/ratings');
     } catch (err) {
-        console.log('Rating error:', err.message);
-        res.send('Error submitting rating: ' + err.message);
+        console.log(err);
+        res.send('Error submitting rating');
     }
 });
 
