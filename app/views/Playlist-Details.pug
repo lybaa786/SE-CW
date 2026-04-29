@@ -22,8 +22,8 @@ block content
               if pl.genre
                 span.meta-chip= pl.genre
               span.meta-chip #{pl.songs.length} song#{pl.songs.length === 1 ? '' : 's'}
-              if pl.stats.avgRating
-                span.meta-chip ⭐ #{pl.stats.avgRating}/5
+              if pl.stats.ratingsCount && pl.stats.ratingsCount > 0
+                span.meta-chip #{pl.stats.ratingsCount} rating#{pl.stats.ratingsCount === 1 ? '' : 's'}
               else
                 span.meta-chip No ratings yet
 
