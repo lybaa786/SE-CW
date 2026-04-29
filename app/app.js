@@ -520,7 +520,7 @@ app.get("/music-search", async function(req, res) {
   });
 });
 
-app.get("/concert-alerts", async function(req, res) {
+app.get("/live-music-alert", async function(req, res) {
   const apiKey = process.env.TICKETMASTER_API_KEY;
 
   const url =
