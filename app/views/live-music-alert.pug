@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Concert Alerts
+
+  if events.length
+    each event in events
+      .event-card
+        h2= event.name
+        p= event.dates.start.localDate
+        if event._embedded && event._embedded.venues
+          p= event._embedded.venues[0].name
+        a(href=event.url, target="_blank") View Tickets
+  else
+    p No concerts found.

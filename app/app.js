@@ -263,8 +263,7 @@ app.post("/login", async function(req, res) {
         res.render("Login", { error: "Something went wrong" });
     }
 });
-<<<<<<< Updated upstream
-=======
+
 // HOME PAGE
 app.get("/Homee", async function(req, res) {
     if (!req.session.user) {
@@ -296,7 +295,6 @@ app.get("/Homee", async function(req, res) {
     }
 });
 
->>>>>>> Stashed changes
 
 // LOGOUT
 app.get("/logout", function(req, res) {
@@ -459,16 +457,8 @@ app.get('/ratings', async function(req, res) {
 
 
 
-<<<<<<< Updated upstream
-app.get("/music-search", async (req, res) => {
-=======
 // MUSIC SEARCH
-
-console.log("URL:", url);
-console.log("Data:", data);
-
 app.get("/music-search", async function(req, res) {
->>>>>>> Stashed changes
   const searchTerm = req.query.q || "";
 
   let songs = [];
@@ -478,6 +468,9 @@ app.get("/music-search", async function(req, res) {
 
     const response = await fetch(url);
     const data = await response.json();
+
+    console.log("URL:", url);
+    console.log("Data:", data);
 
     songs = data.results;
   }
