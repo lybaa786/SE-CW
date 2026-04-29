@@ -3,6 +3,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const Account = require("./models/account");
 const fetch = require("node-fetch");
+const apiKey = process.env.TICKETMASTER_API_KEY;
+
+require('dotenv').config();
 
 var app = express();
 app.use(session({
@@ -545,6 +548,10 @@ app.get("/live-music-alert", async function(req, res) {
 
   const response = await fetch(url);
   const data = await response.json();
+
+  console.log ("API KEY:", apiKey);
+  console.log("URL:", url);
+  console.log("Data:", data);
 
   const events = data._embedded ? data._embedded.events : [];
 
